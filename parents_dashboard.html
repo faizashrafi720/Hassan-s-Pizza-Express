@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parents Command Center - Hassan's Pizza Express</title>
+  <!-- Google Fonts for playful, thick bubble text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* RESET & CORE DESIGN SYSTEM */
+    :root {
+      --pizza-red: #ff4b4b;
+      --pizza-red-dark: #cc3c3c;
+      --cheese-yellow: #ffd016;
+      --cheese-yellow-orange: #ffa800;
+      --crust-brown: #d37d2f;
+      --dashboard-bg: #f5f8fa;
+      --bubble-white: #ffffff;
+      --text-dark: #2c3e50;
+      --coin-gold: #ffbd12;
+      --font-playful: 'Fredoka', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    body {
+      font-family: var(--font-playful);
+      background-color: var(--dashboard-bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 50px;
+    }
+
+    /* HEADER */
+    .dashboard-header {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 20px 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .back-btn {
+      background: linear-gradient(to bottom, #3498db, #2980b9);
+      border: 3px solid #fff;
+      border-radius: 20px;
+      padding: 10px 22px;
+      font-family: var(--font-playful);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 5px 0 #21618c, 0 8px 16px rgba(0,0,0,0.15);
+      transition: all 0.1s;
+      text-decoration: none;
+    }
+
+    .back-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #21618c;
+    }
+
+    .header-title-group {
+      text-align: right;
+    }
+
+    .header-title-group h1 {
+      font-size: 28px;
+      color: var(--pizza-red);
+      text-shadow: 2px 2px 0 #fff;
+    }
+
+    .header-title-group p {
+      font-size: 14px;
+      color: #7f8c8d;
+      font-weight: 600;
+    }
+
+    /* MAIN CONTAINER GRID */
+    .dashboard-grid {
+      width: 90%;
+      max-width: 1100px;
+      margin: 20px auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+    }
+
+    /* logical dashboard cards */
+    .dashboard-card {
+      background: var(--bubble-white);
+      border: 6px solid #dfe6e9;
+      border-radius: 35px;
+      padding: 25px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: transform 0.2s ease;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px dashed #dfe6e9;
+      padding-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: #95a5a6;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    /* CARD 1: ECONOMY WIDGET */
+    .economy-display {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      background: #fdf2e9;
+      border-radius: 25px;
+      padding: 20px;
+      border: 3px solid #f8c471;
+    }
+
+    .economy-coin-box {
+      width: 76px;
+      height: 76px;
+      background: linear-gradient(135deg, #ffd700, #ff9900);
+      border: 5px solid #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+      animation: coinPulse 2s infinite alternate;
+    }
+
+    @keyframes coinPulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08) rotate(10deg); }
+    }
+
+    .economy-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .economy-label {
+      font-size: 14px;
+      color: #b7950b;
+      font-weight: 600;
+    }
+
+    .economy-value {
+      font-size: 38px;
+      font-weight: 700;
+      color: #d35400;
+    }
+
+    .economy-info-text {
+      font-size: 14px;
+      color: #7f8c8d;
+      line-height: 1.4;
+    }
+
+    /* CARD 2: FLEET ROI TELEMETRY */
+    .fleet-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .fleet-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      padding: 12px 20px;
+      border-radius: 20px;
+      border: 2px solid #dfe6e9;
+    }
+
+    .fleet-identity {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    .fleet-details {
+      font-size: 12px;
+      color: #7f8c8d;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-active {
+      background: #e8f8f5;
+      color: #117a65;
+      border: 1px solid #a3e4d7;
+    }
+
+    .badge-owned {
+      background: #ebf5fb;
+      color: #2e86c1;
+      border: 1px solid #a9cce3;
+    }
+
+    .badge-locked {
+      background: #f2f4f4;
+      color: #7f8c8d;
+      border: 1px solid #d5dbdb;
+    }
+
+    /* LEARNING ACCURACY CIRCLE GAUGES */
+    .analytics-display {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      background: #f4f6f6;
+      padding: 15px 20px;
+      border-radius: 25px;
+      border: 2px dashed #bdc3c7;
+    }
+
+    .svg-gauge {
+      width: 110px;
+      height: 110px;
+      transform: rotate(-90deg);
+    }
+
+    .svg-gauge-bg {
+      fill: none;
+      stroke: #eaeded;
+      stroke-width: 10;
+    }
+
+    .svg-gauge-fill {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 282.74;
+      stroke-dashoffset: 282.74;
+      animation: fillGauge 1.2s cubic-bezier(0.1, 1, 0.1, 1) forwards;
+    }
+
+    @keyframes fillGauge {
+      to { stroke-dashoffset: var(--target-offset); }
+    }
+
+    .gauge-container {
+      position: relative;
+      width: 110px;
+      height: 110px;
+    }
+
+    .gauge-percentage-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .analytics-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .analytics-focus-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .analytics-focus-desc {
+      font-size: 13px;
+      color: #7f8c8d;
+      line-height: 1.3;
+    }
+
+    .agentic-insight-card {
+      background: #fef9e7;
+      border: 2px solid #f9e79f;
+      border-radius: 20px;
+      padding: 15px;
+      font-size: 13.5px;
+      line-height: 1.4;
+      color: #7e5109;
+    }
+
+    .insight-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* CARD 5: SYSTEM CONTROL CARD */
+    .system-card {
+      grid-column: 1 / span 2;
+      align-items: center;
+      padding: 20px 30px;
+      border-color: #f5b041;
+      background: #fef9e7;
+    }
+
+    .reset-btn {
+      background: linear-gradient(to bottom, #e74c3c, #c0392b);
+      color: #fff;
+      border: 3px solid #fff;
+      border-radius: 20px;
+      padding: 12px 28px;
+      font-family: var(--font-playful);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #7f0808, 0 8px 16px rgba(231, 76, 60, 0.2);
+      transition: all 0.1s;
+    }
+
+    .reset-btn:hover {
+      transform: scale(1.03);
+    }
+
+    .reset-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #7f0808;
+    }
+
+    /* RESPONSIVE SCALING */
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .system-card {
+        grid-column: 1;
+      }
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-title-group {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER BAR -->
+  <header class="dashboard-header">
+    <a href="pizza_menu.html" class="back-btn" id="backBtn">
+      <span>⬅ MENU</span>
+    </a>
+    
+    <div class="header-title-group">
+      <h1>Parents Command Center</h1>
+      <p>Hassan's Pizza Express • Montessori Telemetry Hub 📊</p>
+    </div>
+  </header>
+
+  <!-- GRID WIDGETS -->
+  <main class="dashboard-grid">
+
+    <!-- CARD 1: ECONOMY TRACKER -->
+    <section class="dashboard-card">
+      <div class="card-title-bar">
+        <span class="card-title">🪙 Economy Tracker</span>
+        <span class="card-subtitle">Financial Literacy</span>
+      </div>
+      
+      <div class="economy-display">
+        <div class="economy-coin-box">🪙</div>
+        <div class="economy-details">
+          <span class="economy-label">Pizza Coins Saved</span>
+          <span class="economy-value" id="coinsVal">250</span>
+        </div>
+      </div>
+
+      <p class="economy-info-text">
+        <strong>Pillar Focus:</strong> The game economy teaches children budgeting, math counting, and capital investment. Coins are earned by driving routes and solving educational checkpoints.
+      </p>
+    </section>
+
+    <!-- CARD 2: FLEET ROI TELEMETRY -->
+    <section class="dashboard-card">
+      <div class="card-title-bar">
+        <span class="card-title">🚌 Vehicle Fleet ROI</span>
+        <span class="card-subtitle">Budget & Asset Upgrades</span>
+      </div>
+
+      <div class="fleet-list">
+        <!-- Vehicle 1 -->
+        <div class="fleet-item">
+          <div class="fleet-identity">
+            <span>🚚</span>
+            <div>
+              <div>Delivery Truck</div>
+              <div class="fleet-details">Capacity: 1 Pizza • Speed: 1/3</div>
+            </div>
+          </div>
+          <span class="status-badge" id="badge-truck">Owned</span>
+        </div>
+
+        <!-- Vehicle 2 -->
+        <div class="fleet-item">
+          <div class="fleet-identity">
+            <span>🚌</span>
+            <div>
+              <div>School Bus</div>
+              <div class="fleet-details">Capacity: 3 Pizzas • Speed: 2/3</div>
+            </div>
+          </div>
+          <span class="status-badge" id="badge-school_bus">Locked</span>
+        </div>
+
+        <!-- Vehicle 3 -->
+        <div class="fleet-item">
+          <div class="fleet-identity">
+            <span>🏎️</span>
+            <div>
+              <div>Double-Decker Bus</div>
+              <div class="fleet-details">Capacity: 5 Pizzas • Speed: 3/3</div>
+            </div>
+          </div>
+          <span class="status-badge" id="badge-double_decker">Locked</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARD 3: MATH ANALYTICS -->
+    <section class="dashboard-card">
+      <div class="card-title-bar">
+        <span class="card-title">🔢 Math Explorer</span>
+        <span class="card-subtitle">Counting & Addition</span>
+      </div>
+
+      <div class="analytics-display">
+        <div class="gauge-container">
+          <!-- Circular SVG Gauge (85%) -->
+          <svg class="svg-gauge">
+            <circle class="svg-gauge-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="svg-gauge-fill" id="mathGauge" cx="50" cy="50" r="45" style="stroke: #2ecc71; --target-offset: 42.41px;"></circle>
+          </svg>
+          <div class="gauge-percentage-text">85%</div>
+        </div>
+
+        <div class="analytics-info">
+          <span class="analytics-focus-label">Topic Accuracy</span>
+          <span class="analytics-focus-desc">
+            Measures visual pizza slice counting and addition sums from Toll Booth checkpoints.
+          </span>
+        </div>
+      </div>
+
+      <div class="agentic-insight-card" style="background: #e8f8f5; border-color: #a3e4d7; color: #117a65;">
+        <div class="insight-title">
+          <span>🧠</span>
+          <span>Adaptive Insight (Active)</span>
+        </div>
+        <p>Hassan has demonstrated excellent proficiency in quantity counting. Math puzzles have dynamically scaled to addition sums between 5 and 10.</p>
+      </div>
+    </section>
+
+    <!-- CARD 4: ENGLISH ANALYTICS -->
+    <section class="dashboard-card">
+      <div class="card-title-bar">
+        <span class="card-title">🎒 Alphabet matching</span>
+        <span class="card-subtitle">Sight words & Phonics</span>
+      </div>
+
+      <div class="analytics-display">
+        <div class="gauge-container">
+          <!-- Circular SVG Gauge (60%) -->
+          <svg class="svg-gauge">
+            <circle class="svg-gauge-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="svg-gauge-fill" id="englishGauge" cx="50" cy="50" r="45" style="stroke: #e67e22; --target-offset: 113.09px;"></circle>
+          </svg>
+          <div class="gauge-percentage-text">60%</div>
+        </div>
+
+        <div class="analytics-info">
+          <span class="analytics-focus-label">Topic Accuracy</span>
+          <span class="analytics-focus-desc">
+            Measures matching uppercase letter blocks to lowercase match options.
+          </span>
+        </div>
+      </div>
+
+      <div class="agentic-insight-card">
+        <div class="insight-title">
+          <span>⚠️</span>
+          <span>Adaptive Insight (Active)</span>
+        </div>
+        <p><strong>Actionable Insight:</strong> Hassan needs a bit more practice differentiating mirror letters like 'b' and 'd'. Level 1 pathing difficulty has been scaled down to focus on letter recognition matching.</p>
+      </div>
+    </section>
+
+    <!-- CARD 5: SYSTEM MANAGEMENT CONTROL -->
+    <section class="dashboard-card system-card">
+      <div style="text-align: center; margin-bottom: 5px;">
+        <h3 style="font-size: 18px; margin-bottom: 4px;">Delete System Progress</h3>
+        <p style="font-size: 13.5px; color: #7e5109; max-width: 600px;">
+          Resetting data will completely wipe Hassan's vehicle upgrades, unlocked achievements, and return the coin ledger back to starting values.
+        </p>
+      </div>
+      <button class="reset-btn" id="resetBtn">Reset Game Data 🗑️</button>
+    </section>
+
+  </main>
+
+  <script>
+    // --- PLAYFUL AUDIO SYNTHESIZER (WEB AUDIO API) ---
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // Hover sound (sweep)
+    function playHoverSound() {
+      initAudio();
+      if (!audioCtx) return;
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(550, audioCtx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+
+    // Click pop sound
+    function playClickSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.12);
+    }
+
+    // Low buzzer reset tone
+    function playResetSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.4);
+      
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(450, audioCtx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.4);
+      
+      osc.disconnect(gain);
+      osc.connect(filter);
+      filter.connect(gain);
+
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.45);
+    }
+
+    // --- DATA RECOVERY & TELEMETRY ---
+    const coinsText = document.getElementById('coinsVal');
+    const badgeTruck = document.getElementById('badge-truck');
+    const badgeSchoolBus = document.getElementById('badge-school_bus');
+    const badgeDoubleDecker = document.getElementById('badge-double_decker');
+
+    function syncTelemetryData() {
+      // 1. Sync coins
+      const coins = localStorage.getItem('pizza_coins');
+      coinsText.textContent = coins !== null ? coins : '250';
+
+      // 2. Sync vehicle statuses
+      const activeVehicle = localStorage.getItem('pizza_active_vehicle') || 'truck';
+      const vehiclesRaw = localStorage.getItem('pizza_owned_vehicles');
+      
+      let ownedVehicles = {
+        truck: true,
+        school_bus: false,
+        double_decker: false
+      };
+
+      if (vehiclesRaw !== null) {
+        ownedVehicles = JSON.parse(vehiclesRaw);
+      }
+
+      // Update badges
+      updateBadge('truck', ownedVehicles.truck, activeVehicle === 'truck', badgeTruck);
+      updateBadge('school_bus', ownedVehicles.school_bus, activeVehicle === 'school_bus', badgeSchoolBus);
+      updateBadge('double_decker', ownedVehicles.double_decker, activeVehicle === 'double_decker', badgeDoubleDecker);
+    }
+
+    function updateBadge(key, isOwned, isActive, badgeEl) {
+      badgeEl.className = 'status-badge'; // reset
+      if (isActive) {
+        badgeEl.classList.add('badge-active');
+        badgeEl.textContent = 'Active Drive!';
+      } else if (isOwned) {
+        badgeEl.classList.add('badge-owned');
+        badgeEl.textContent = 'Owned';
+      } else {
+        badgeEl.classList.add('badge-locked');
+        badgeEl.textContent = 'Locked';
+      }
+    }
+
+    // Reset logic
+    document.getElementById('resetBtn').addEventListener('mouseenter', () => playHoverSound());
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      playClickSound();
+      
+      const confirmReset = confirm("⚠️ Are you sure you want to delete all Hassan's Pizza Express progress? This will reset coins to 250 and clear all fleet vehicle upgrades.");
+      
+      if (confirmReset) {
+        playResetSound();
+        // Clear variables
+        localStorage.clear();
+        
+        // Re-inject defaults
+        localStorage.setItem('pizza_coins', 250);
+        localStorage.setItem('pizza_owned_vehicles', JSON.stringify({
+          truck: true,
+          school_bus: false,
+          double_decker: false
+        }));
+        localStorage.setItem('pizza_active_vehicle', 'truck');
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      }
+    });
+
+    document.getElementById('backBtn').addEventListener('mouseenter', () => playHoverSound());
+    document.getElementById('backBtn').addEventListener('click', () => playClickSound());
+
+    // Init Page
+    syncTelemetryData();
+  </script>
+</body>
+</html>
