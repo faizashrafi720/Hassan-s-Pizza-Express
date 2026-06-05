@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hassan's Pizza Express - Main Menu</title>
+  <!-- Google Fonts for playful, thick bubble text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* RESET & CORE DESIGN SYSTEM */
+    :root {
+      --pizza-red: #ff4b4b;
+      --pizza-red-dark: #cc3c3c;
+      --cheese-yellow: #ffd016;
+      --cheese-yellow-orange: #ffa800;
+      --crust-brown: #d37d2f;
+      --sky-blue-start: #8ae4ff;
+      --sky-blue-end: #c4f3ff;
+      --grass-green: #5ad13b;
+      --grass-green-dark: #40a325;
+      --road-grey: #4e565c;
+      --coin-gold: #ffbd12;
+      --bubble-white: #ffffff;
+      --text-dark: #2c3e50;
+      --font-playful: 'Fredoka', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    body {
+      font-family: var(--font-playful);
+      background: linear-gradient(to bottom, var(--sky-blue-start), var(--sky-blue-end));
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* SCENERY & BACKGROUND ANIMATIONS */
+    .sky-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .cloud {
+      position: absolute;
+      background: var(--bubble-white);
+      border-radius: 99px;
+      opacity: 0.9;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.05);
+      animation: floatCloud linear infinite;
+    }
+
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: var(--bubble-white);
+      border-radius: 50%;
+    }
+
+    .cloud-type-1 {
+      width: 120px;
+      height: 40px;
+      top: 15%;
+      animation-duration: 35s;
+    }
+    .cloud-type-1::before {
+      width: 50px;
+      height: 50px;
+      top: -25px;
+      left: 15px;
+    }
+    .cloud-type-1::after {
+      width: 70px;
+      height: 70px;
+      top: -40px;
+      right: 15px;
+    }
+
+    .cloud-type-2 {
+      width: 180px;
+      height: 60px;
+      top: 35%;
+      animation-duration: 50s;
+    }
+    .cloud-type-2::before {
+      width: 80px;
+      height: 80px;
+      top: -40px;
+      left: 20px;
+    }
+    .cloud-type-2::after {
+      width: 100px;
+      height: 100px;
+      top: -60px;
+      right: 25px;
+    }
+
+    .cloud-type-3 {
+      width: 100px;
+      height: 35px;
+      top: 8%;
+      animation-duration: 25s;
+    }
+    .cloud-type-3::before {
+      width: 40px;
+      height: 40px;
+      top: -20px;
+      left: 10px;
+    }
+    .cloud-type-3::after {
+      width: 50px;
+      height: 50px;
+      top: -30px;
+      right: 15px;
+    }
+
+    @keyframes floatCloud {
+      0% { transform: translateX(110vw); }
+      100% { transform: translateX(-20vw); }
+    }
+
+    /* SCENERY GROUND & ROAD */
+    .ground-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30%;
+      z-index: 2;
+    }
+
+    .hills {
+      position: absolute;
+      bottom: 12vh;
+      width: 100%;
+      height: 15vh;
+      background: var(--grass-green);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      transform: scaleY(0.4) translateY(6vh);
+      box-shadow: 0 -8px 0 var(--grass-green-dark);
+    }
+
+    .road {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 12vh;
+      background: var(--road-grey);
+      border-top: 8px solid #6b7780;
+    }
+
+    .road-lines {
+      position: absolute;
+      top: calc(50% - 4px);
+      width: 100%;
+      height: 8px;
+      background-image: linear-gradient(to right, #fff 50%, transparent 50%);
+      background-size: 80px 100%;
+      animation: driveLines 1.5s linear infinite;
+    }
+
+    @keyframes driveLines {
+      0% { background-position: 0 0; }
+      100% { background-position: -80px 0; }
+    }
+
+    /* DRIVING PIZZA TRUCK ANIMATION */
+    .truck-container {
+      position: absolute;
+      bottom: 4vh;
+      left: 20%;
+      width: 140px;
+      height: 90px;
+      z-index: 5;
+      animation: bobbingTruck 0.3s ease-in-out infinite alternate;
+    }
+
+    .truck-body {
+      position: absolute;
+      bottom: 18px;
+      left: 0;
+      width: 100px;
+      height: 60px;
+      background: var(--pizza-red);
+      border-radius: 16px 10px 10px 10px;
+      box-shadow: inset -8px -8px 0 var(--pizza-red-dark), 5px 8px 0 rgba(0,0,0,0.15);
+    }
+
+    /* Pizza box on top */
+    .pizza-box-top {
+      position: absolute;
+      top: -12px;
+      left: 15px;
+      width: 60px;
+      height: 15px;
+      background: #fbf0db;
+      border: 3px solid var(--crust-brown);
+      border-radius: 4px;
+      transform: rotate(-5deg);
+    }
+    .pizza-box-top::after {
+      content: '🍕';
+      position: absolute;
+      top: -8px;
+      left: 15px;
+      font-size: 16px;
+    }
+
+    .truck-cabin {
+      position: absolute;
+      bottom: 18px;
+      left: 95px;
+      width: 40px;
+      height: 48px;
+      background: var(--pizza-red);
+      border-radius: 0 20px 8px 0;
+      box-shadow: inset -4px -6px 0 var(--pizza-red-dark), 5px 8px 0 rgba(0,0,0,0.15);
+    }
+
+    .truck-window {
+      position: absolute;
+      top: 6px;
+      left: 5px;
+      width: 24px;
+      height: 20px;
+      background: #e3f2fd;
+      border-radius: 0 10px 4px 4px;
+      border: 3px solid #2c3e50;
+      overflow: hidden;
+    }
+
+    .truck-window::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -10px;
+      width: 15px;
+      height: 100%;
+      background: rgba(255,255,255,0.4);
+      transform: skewX(-30deg);
+    }
+
+    .truck-wheel {
+      position: absolute;
+      bottom: 0;
+      width: 28px;
+      height: 28px;
+      background: #2c3e50;
+      border: 4px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    }
+
+    .wheel-inner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      background: var(--coin-gold);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .wheel-spoke {
+      position: absolute;
+      top: 0;
+      left: calc(50% - 2px);
+      width: 4px;
+      height: 100%;
+      background: #fff;
+    }
+    .wheel-spoke-2 {
+      transform: rotate(90deg);
+    }
+
+    .wheel-front {
+      left: 102px;
+      animation: spinWheel 0.6s linear infinite;
+    }
+
+    .wheel-back {
+      left: 18px;
+      animation: spinWheel 0.6s linear infinite;
+    }
+
+    @keyframes spinWheel {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes bobbingTruck {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3px); }
+    }
+
+    .exhaust-smoke {
+      position: absolute;
+      left: -15px;
+      bottom: 22px;
+      width: 10px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      animation: exhaustpuff 0.8s infinite linear;
+    }
+
+    @keyframes exhaustpuff {
+      0% { transform: translate(0, 0) scale(0.6); opacity: 1; }
+      100% { transform: translate(-30px, -15px) scale(1.6); opacity: 0; }
+    }
+
+    /* HUD CONTROLS */
+    .hud {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      padding: 0 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .coin-container {
+      background: var(--bubble-white);
+      border-radius: 50px;
+      padding: 8px 24px 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.1), 0 0 20px rgba(255, 208, 22, 0.2);
+      border: 4px solid var(--coin-gold);
+      transform: translate(0, 0);
+      transition: transform 0.2s ease;
+    }
+
+    .coin-container:hover {
+      transform: scale(1.05);
+    }
+
+    .coin-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #ffd700, #ff9900);
+      border: 4px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      animation: pulseCoin 2s infinite alternate;
+    }
+
+    @keyframes pulseCoin {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1) rotate(15deg); }
+    }
+
+    .coin-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-dark);
+      text-shadow: 1px 1px 0 #fff;
+    }
+
+    .parents-button {
+      width: 56px;
+      height: 56px;
+      background: var(--bubble-white);
+      border: 4px solid #b2bec3;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .parents-button:hover {
+      transform: scale(1.1) rotate(45deg);
+      border-color: var(--text-dark);
+    }
+
+    .parents-button:active {
+      transform: scale(0.9) rotate(45deg);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+    }
+
+    .parents-button svg {
+      width: 28px;
+      height: 28px;
+      fill: #636e72;
+      transition: fill 0.2s;
+    }
+
+    .parents-button:hover svg {
+      fill: var(--text-dark);
+    }
+
+    /* MAIN MENU CARD CONTAINER */
+    .menu-main {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      z-index: 10;
+      text-align: center;
+    }
+
+    /* BOUNCY TITLE Styling */
+    .title-wrapper {
+      margin-bottom: 10px;
+      animation: floatTitle 3s ease-in-out infinite alternate;
+    }
+
+    .title-text {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--pizza-red);
+      text-shadow: 
+        -3px -3px 0 #fff,  
+         3px -3px 0 #fff,
+        -3px  3px 0 #fff,
+         3px  3px 0 #fff,
+         0px  8px 0px rgba(0,0,0,0.15),
+         0px 14px 20px rgba(255, 75, 75, 0.3);
+      letter-spacing: -1px;
+    }
+
+    .title-subtext {
+      font-size: 24px;
+      color: #0984e3;
+      margin-top: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-shadow: 
+        -2px -2px 0 #fff,
+         2px -2px 0 #fff,
+        -2px  2px 0 #fff,
+         2px  2px 0 #fff;
+    }
+
+    @keyframes floatTitle {
+      0% { transform: translateY(0) rotate(-2deg); }
+      100% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    /* MAIN PLAY BUTTON (PULSATING PIZZA) */
+    .play-pizza-btn {
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, var(--cheese-yellow), var(--cheese-yellow-orange));
+      border: 14px solid var(--crust-brown);
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        inset 0 10px 0 rgba(255,255,255,0.4),
+        0 15px 0 rgba(211, 125, 47, 0.8),
+        0 25px 30px rgba(0,0,0,0.15);
+      animation: pulsateBtn 2s infinite alternate;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Pepperoni slices */
+    .pepperoni {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #ff3f3f, #c0392b);
+      border-radius: 50%;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 3px 0 rgba(0,0,0,0.1);
+    }
+    .pep1 { top: 35px; left: 45px; }
+    .pep2 { top: 40px; right: 50px; }
+    .pep3 { bottom: 35px; left: 60px; }
+    .pep4 { bottom: 65px; right: 35px; }
+
+    /* Basil leaves or peppers */
+    .basil {
+      position: absolute;
+      width: 14px;
+      height: 8px;
+      background: #27ae60;
+      border-radius: 10px 0 10px 0;
+      transform: rotate(20deg);
+    }
+    .bas1 { top: 60px; left: 85px; transform: rotate(-30deg); }
+    .bas2 { bottom: 70px; left: 35px; transform: rotate(45deg); }
+    .bas3 { bottom: 45px; right: 75px; transform: rotate(10deg); }
+
+    .play-pizza-btn:hover {
+      transform: scale(1.08) rotate(5deg);
+      box-shadow: 
+        inset 0 10px 0 rgba(255,255,255,0.4),
+        0 18px 0 rgba(211, 125, 47, 0.8),
+        0 30px 40px rgba(0,0,0,0.25);
+    }
+
+    .play-pizza-btn:active {
+      transform: scale(0.94) rotate(-3deg);
+      box-shadow: 
+        inset 0 5px 0 rgba(255,255,255,0.4),
+        0 5px 0 rgba(211, 125, 47, 0.8),
+        0 10px 15px rgba(0,0,0,0.15);
+    }
+
+    .play-btn-text {
+      font-size: 38px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 
+        -3px -3px 0 #2c3e50,  
+         3px -3px 0 #2c3e50,
+        -3px  3px 0 #2c3e50,
+         3px  3px 0 #2c3e50,
+         0 6px 0px #2c3e50;
+      letter-spacing: 2px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    @keyframes pulsateBtn {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.04); }
+    }
+
+    /* SECONDARY BUTTON (GARAGE & UPGRADES) */
+    .garage-btn {
+      width: 100%;
+      padding: 18px 30px;
+      background: linear-gradient(to bottom, #3498db, #2980b9);
+      border: 4px solid #fff;
+      border-radius: 25px;
+      color: #fff;
+      font-family: var(--font-playful);
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      box-shadow: 
+        0 8px 0 #21618c,
+        0 15px 25px rgba(0,0,0,0.1);
+      transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .garage-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+        0 12px 0 #21618c,
+        0 20px 30px rgba(0,0,0,0.15);
+    }
+
+    .garage-btn:active {
+      transform: translateY(4px);
+      box-shadow: 
+        0 2px 0 #21618c,
+        0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    .garage-btn-icon {
+      font-size: 24px;
+    }
+
+    /* MODAL: PARENTAL GATE */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(44, 62, 80, 0.65);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 100;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--bubble-white);
+      width: 90%;
+      max-width: 440px;
+      border-radius: 35px;
+      padding: 30px;
+      border: 8px solid var(--pizza-red);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      text-align: center;
+      transform: scale(0.8) rotate(-3deg);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-backdrop.active .modal-content {
+      transform: scale(1) rotate(0deg);
+    }
+
+    .modal-title {
+      font-size: 28px;
+      color: var(--pizza-red);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .modal-desc {
+      font-size: 16px;
+      color: #535c68;
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    .math-lock-challenge {
+      background: #f5f6fa;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-dark);
+      border: 3px dashed #b2bec3;
+      letter-spacing: 1px;
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 15px;
+      font-size: 24px;
+      font-family: var(--font-playful);
+      text-align: center;
+      border: 4px solid #dfe6e9;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .modal-input:focus {
+      border-color: #3498db;
+    }
+
+    .modal-btn-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 20px;
+      font-family: var(--font-playful);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+      transition: all 0.1s;
+    }
+
+    .modal-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+    }
+
+    .btn-cancel {
+      background: #dfe6e9;
+      color: #636e72;
+    }
+
+    .btn-submit {
+      background: var(--pizza-red);
+      color: #fff;
+    }
+
+    /* Parents Dashboard Area after unlocked */
+    .unlocked-dashboard {
+      display: none;
+    }
+
+    .stat-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background: #f5f6fa;
+      border-radius: 18px;
+      padding: 12px;
+      border: 2px solid #dfe6e9;
+    }
+
+    .stat-card-title {
+      font-size: 12px;
+      color: #95a5a6;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .stat-card-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .shake {
+      animation: shakeFrame 0.4s ease-in-out;
+    }
+
+    @keyframes shakeFrame {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-10px); }
+      40%, 80% { transform: translateX(10px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SKY FLOATING CLOUDS -->
+  <div class="sky-container">
+    <div class="cloud cloud-type-1" style="left: -150px;"></div>
+    <div class="cloud cloud-type-2" style="left: -200px; animation-delay: 5s;"></div>
+    <div class="cloud cloud-type-3" style="left: -100px; animation-delay: 15s;"></div>
+  </div>
+
+  <!-- HUD BAR -->
+  <header class="hud">
+    <div class="coin-container" id="coinCounter">
+      <div class="coin-icon">🪙</div>
+      <div class="coin-text">150</div>
+    </div>
+    
+    <button class="parents-button" id="parentsBtn" aria-label="Parents Dashboard">
+      <svg viewBox="0 0 24 24">
+        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- MAIN MENU CONTENT -->
+  <main class="menu-main">
+    <div class="title-wrapper">
+      <h1 class="title-text">Hassan's<br>Pizza Express</h1>
+      <div class="title-subtext">Delivering Fun & Learning! 🍕🎒</div>
+    </div>
+
+    <!-- Pizza Shaped Play Button -->
+    <button class="play-pizza-btn" id="playBtn">
+      <div class="pepperoni pep1"></div>
+      <div class="pepperoni pep2"></div>
+      <div class="pepperoni pep3"></div>
+      <div class="pepperoni pep4"></div>
+      <div class="basil bas1"></div>
+      <div class="basil bas2"></div>
+      <div class="basil bas3"></div>
+      <span class="play-btn-text">PLAY!</span>
+    </button>
+
+    <!-- Upgrades Button -->
+    <button class="garage-btn" id="garageBtn">
+      <span class="garage-btn-icon">🚌</span>
+      <span>GARAGE & UPGRADES</span>
+    </button>
+  </main>
+
+  <!-- GROUND SCENE WITH CONTINUOUS DRIVING TRUCK -->
+  <div class="ground-container">
+    <div class="hills"></div>
+    <div class="road">
+      <div class="road-lines"></div>
+      <!-- Cartoon Truck -->
+      <div class="truck-container">
+        <div class="exhaust-smoke"></div>
+        <div class="pizza-box-top"></div>
+        <div class="truck-body"></div>
+        <div class="truck-cabin">
+          <div class="truck-window"></div>
+        </div>
+        <div class="truck-wheel wheel-front">
+          <div class="wheel-spoke"></div>
+          <div class="wheel-spoke wheel-spoke-2"></div>
+          <div class="wheel-inner"></div>
+        </div>
+        <div class="truck-wheel wheel-back">
+          <div class="wheel-spoke"></div>
+          <div class="wheel-spoke wheel-spoke-2"></div>
+          <div class="wheel-inner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARENTAL GATE / OPTIONS MODAL -->
+  <div class="modal-backdrop" id="parentsModal">
+    <div class="modal-content" id="parentsModalContent">
+      <div class="gate-area" id="gateArea">
+        <h2 class="modal-title">Parents Area Lock 🔒</h2>
+        <p class="modal-desc">To open the dashboard, please ask a grown-up to solve this simple puzzle:</p>
+        <div class="math-lock-challenge" id="mathChallenge">8 + 7 = ?</div>
+        <input type="number" class="modal-input" id="gateAnswer" placeholder="Type answer here" pattern="[0-9]*" inputmode="numeric">
+        <div class="modal-btn-row">
+          <button class="modal-btn btn-cancel" id="closeParentsBtn">Cancel</button>
+          <button class="modal-btn btn-submit" id="submitAnswerBtn">Unlock</button>
+        </div>
+      </div>
+      
+      <!-- Unlocked Parents Dashboard reporting details -->
+      <div class="unlocked-dashboard" id="parentsDashboard">
+        <h2 class="modal-title" style="color: #27ae60;">Parents Dashboard ✅</h2>
+        <p class="modal-desc">Hassan's educational progress, difficulty telemetry, and learning patterns.</p>
+        
+        <div class="stat-card-grid">
+          <div class="stat-card">
+            <div class="stat-card-title">Adaptive Speed</div>
+            <div class="stat-card-val" id="telemetrySpeed">Normal</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-title">Success Rate</div>
+            <div class="stat-card-val" id="telemetrySuccess">87%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-title">Pizzas Delivered</div>
+            <div class="stat-card-val" id="telemetryDelivered">18</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-title">Primary Pillar</div>
+            <div class="stat-card-val" id="telemetryPillar" style="color: #3498db; font-size: 15px;">Math Explorer</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; text-align: left; font-size: 14px; color: #7f8c8d;">
+          <p>🎒 <strong>Montessori Transition Insight:</strong> Hassan has shown high proficiency in shape matching. Phonics and word sorting have been scaled down for gradual ease.</p>
+        </div>
+
+        <button class="modal-btn btn-cancel" id="lockDashboardBtn" style="margin-top: 20px; width: 100%;">Close Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- PLAYFUL AUDIO SYNTHESIZER (WEB AUDIO API) ---
+    // Safe context creation on first user gesture to comply with browser autoplay policies
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // Gentle upward sweeping synthesizer tone for hovers
+    function playHoverSound() {
+      initAudio();
+      if (!audioCtx) return;
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.1);
+      
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    // Warm bubble pop synthesizer sound for clicks
+    function playClickSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.15);
+      
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    // A slightly higher "bell" tone for successful verification/unlocking
+    function playSuccessSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      
+      // Play a short pleasant double-chime
+      [523.25, 659.25].forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        gain.gain.setValueAtTime(0.12, now + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.2);
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.25);
+      });
+    }
+
+    // A low warm double honk for wrong answers
+    function playFailSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      [120, 120].forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+        gain.gain.setValueAtTime(0.1, now + idx * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.15 + 0.12);
+        osc.start(now + idx * 0.15);
+        osc.stop(now + idx * 0.15 + 0.15);
+      });
+    }
+
+    // --- PARENTAL GATE CHALLENGE LOGIC ---
+    let expectedGateAnswer = 0;
+
+    function generateParentsGateChallenge() {
+      const num1 = Math.floor(Math.random() * 8) + 5; // 5 to 12
+      const num2 = Math.floor(Math.random() * 8) + 5; // 5 to 12
+      expectedGateAnswer = num1 + num2;
+      document.getElementById('mathChallenge').textContent = `${num1} + ${num2} = ?`;
+      document.getElementById('gateAnswer').value = '';
+    }
+
+    // --- INTERACTIVE DOM EVENTS & ROUTING ---
+    const playBtn = document.getElementById('playBtn');
+    const garageBtn = document.getElementById('garageBtn');
+    const parentsBtn = document.getElementById('parentsBtn');
+    const coinCounter = document.getElementById('coinCounter');
+    
+    const parentsModal = document.getElementById('parentsModal');
+    const parentsModalContent = document.getElementById('parentsModalContent');
+    const closeParentsBtn = document.getElementById('closeParentsBtn');
+    const submitAnswerBtn = document.getElementById('submitAnswerBtn');
+    const gateAnswerInput = document.getElementById('gateAnswer');
+    const gateArea = document.getElementById('gateArea');
+    const parentsDashboard = document.getElementById('parentsDashboard');
+    const lockDashboardBtn = document.getElementById('lockDashboardBtn');
+
+    // Button interactions
+    [playBtn, garageBtn, parentsBtn, coinCounter].forEach(el => {
+      el.addEventListener('mouseenter', () => playHoverSound());
+    });
+
+    playBtn.addEventListener('click', () => {
+      playClickSound();
+      playBtn.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        playBtn.style.transform = '';
+        window.location.href = 'level_1.html';
+      }, 150);
+    });
+
+    garageBtn.addEventListener('click', () => {
+      playClickSound();
+      garageBtn.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        garageBtn.style.transform = '';
+        window.location.href = 'garage.html';
+      }, 150);
+    });
+
+    // Parent Dashboard Modal display
+    parentsBtn.addEventListener('click', () => {
+      playClickSound();
+      generateParentsGateChallenge();
+      gateArea.style.display = 'block';
+      parentsDashboard.style.display = 'none';
+      parentsModal.classList.add('active');
+      setTimeout(() => {
+        gateAnswerInput.focus();
+      }, 100);
+    });
+
+    // Cancel modal
+    closeParentsBtn.addEventListener('click', () => {
+      playClickSound();
+      parentsModal.classList.remove('active');
+    });
+
+    lockDashboardBtn.addEventListener('click', () => {
+      playClickSound();
+      parentsModal.classList.remove('active');
+    });
+
+    // Solve parental lock math gate
+    submitAnswerBtn.addEventListener('click', () => {
+      verifyParentGate();
+    });
+
+    gateAnswerInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        verifyParentGate();
+      }
+    });
+
+    function verifyParentGate() {
+      const userAnswer = parseInt(gateAnswerInput.value.trim(), 10);
+      if (userAnswer === expectedGateAnswer) {
+        playSuccessSound();
+        // Redirect parent directly to the Parents Dashboard page
+        setTimeout(() => {
+          window.location.href = 'parents_dashboard.html';
+        }, 300);
+      } else {
+        playFailSound();
+        parentsModalContent.classList.add('shake');
+        setTimeout(() => {
+          parentsModalContent.classList.remove('shake');
+          generateParentsGateChallenge();
+          gateAnswerInput.focus();
+        }, 400);
+      }
+    }
+
+    // Dismiss modal on background click
+    parentsModal.addEventListener('click', (e) => {
+      if (e.target === parentsModal) {
+        playClickSound();
+        parentsModal.classList.remove('active');
+      }
+    });
+
+    // Sync Coin HUD Balance from local storage
+    function loadCoinsHUD() {
+      let coins = localStorage.getItem('pizza_coins');
+      if (coins === null) {
+        coins = 250;
+        localStorage.setItem('pizza_coins', coins);
+      }
+      document.querySelector('.coin-text').textContent = coins;
+    }
+    window.addEventListener('DOMContentLoaded', loadCoinsHUD);
+  </script>
+</body>
+</html>

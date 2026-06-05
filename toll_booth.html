@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hassan's Pizza Express - Toll Booth Checkpoint</title>
+  <!-- Google Fonts for playful, thick bubble text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* RESET & CORE DESIGN SYSTEM */
+    :root {
+      --pizza-red: #ff4b4b;
+      --pizza-red-dark: #cc3c3c;
+      --cheese-yellow: #ffd016;
+      --cheese-yellow-orange: #ffa800;
+      --crust-brown: #d37d2f;
+      --sky-blue: #a5f2ff;
+      --grass-green: #5ad13b;
+      --road-grey: #4e565c;
+      --coin-gold: #ffbd12;
+      --bubble-white: #ffffff;
+      --text-dark: #2c3e50;
+      --font-playful: 'Fredoka', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    body {
+      font-family: var(--font-playful);
+      background: var(--sky-blue);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    /* HUD BAR */
+    .hud {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 15px 20px 5px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .back-btn {
+      background: linear-gradient(to bottom, #f39c12, #d35400);
+      border: 3px solid #fff;
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-family: var(--font-playful);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 #933c04, 0 6px 12px rgba(0,0,0,0.15);
+      transition: all 0.1s;
+      text-decoration: none;
+    }
+
+    .back-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #933c04;
+    }
+
+    .coin-container {
+      background: var(--bubble-white);
+      border-radius: 50px;
+      padding: 6px 18px 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+      border: 3px solid var(--coin-gold);
+    }
+
+    .coin-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #ffd700, #ff9900);
+      border: 3px solid #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      animation: bounceCoin 1s infinite alternate;
+    }
+
+    @keyframes bounceCoin {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-4px); }
+    }
+
+    .coin-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    /* MAIN SCREEN LAYOUT */
+    .checkpoint-layout {
+      flex: 1;
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 10px;
+      z-index: 5;
+    }
+
+    /* PUZZLE BOARD (TOP 60%) */
+    .puzzle-board {
+      background: var(--bubble-white);
+      border: 8px solid #3498db;
+      border-radius: 35px;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      min-height: 280px;
+      justify-content: center;
+      position: relative;
+    }
+
+    .puzzle-title {
+      font-size: 24px;
+      color: #3498db;
+      font-weight: 700;
+    }
+
+    /* Math challenge content visual display */
+    .math-visual-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .pizza-count-group {
+      display: flex;
+      gap: 6px;
+      background: #f1f2f6;
+      padding: 10px 15px;
+      border-radius: 20px;
+      border: 3px dashed #bdc3c7;
+    }
+
+    .pizza-item-svg {
+      width: 40px;
+      height: 40px;
+      animation: gentleFloat 2s infinite alternate;
+    }
+
+    @keyframes gentleFloat {
+      0% { transform: translateY(0) rotate(-5deg); }
+      100% { transform: translateY(-5px) rotate(5deg); }
+    }
+
+    /* English challenge box display */
+    .english-visual-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .pizza-box-letter {
+      width: 110px;
+      height: 110px;
+      background: #fbf0db;
+      border: 6px solid var(--crust-brown);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      font-weight: 700;
+      color: var(--pizza-red);
+      box-shadow: 0 8px 0 rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .pizza-box-letter::after {
+      content: '🍕';
+      position: absolute;
+      top: -16px;
+      left: calc(50% - 15px);
+      font-size: 22px;
+    }
+
+    .puzzle-instructions {
+      font-size: 18px;
+      color: #7f8c8d;
+      font-weight: 600;
+    }
+
+    /* OPTION CHOICES BUBBLE BUTTONS */
+    .choices-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .choice-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 5px solid #fff;
+      background: linear-gradient(135deg, var(--cheese-yellow), var(--cheese-yellow-orange));
+      font-family: var(--font-playful);
+      font-size: 36px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 0 #d35400, 0 10px 15px rgba(0,0,0,0.1);
+      transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .choice-btn:hover {
+      transform: scale(1.08);
+    }
+
+    .choice-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 2px 0 #d35400;
+    }
+
+    /* Incorrect option shake animation styling */
+    .shake-error {
+      animation: btnShake 0.4s ease-in-out;
+      background: linear-gradient(135deg, #ff7675, #d63031) !important;
+      box-shadow: 0 6px 0 #7f0808 !important;
+    }
+
+    @keyframes btnShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    /* SUCCESS DRIVE ON BUTTON */
+    .success-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      animation: popSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popSuccess {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .success-text {
+      font-size: 26px;
+      color: #27ae60;
+      font-weight: 700;
+    }
+
+    .drive-on-btn {
+      background: linear-gradient(to bottom, #2ecc71, #27ae60);
+      border: 5px solid #fff;
+      border-radius: 30px;
+      padding: 16px 40px;
+      color: #fff;
+      font-family: var(--font-playful);
+      font-size: 26px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 0 #1b6c32, 0 15px 25px rgba(46, 204, 113, 0.25);
+      transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-decoration: none;
+    }
+
+    .drive-on-btn:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 12px 0 #1b6c32, 0 20px 30px rgba(46, 204, 113, 0.35);
+    }
+
+    .drive-on-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #1b6c32;
+    }
+
+    /* TOLL ROAD SCENERY (BOTTOM 40%) */
+    .road-scenery {
+      position: relative;
+      background: #7be37b;
+      border: 8px solid #52be52;
+      border-radius: 35px;
+      height: 200px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .road-lane {
+      position: absolute;
+      bottom: 25px;
+      left: 0;
+      width: 100%;
+      height: 90px;
+      background: var(--road-grey);
+      border-top: 5px solid #6b7780;
+      border-bottom: 5px solid #6b7780;
+      display: flex;
+      align-items: center;
+    }
+
+    .road-dashed-line {
+      position: absolute;
+      width: 100%;
+      height: 6px;
+      background-image: linear-gradient(to right, #fff 50%, transparent 50%);
+      background-size: 60px 100%;
+      top: calc(50% - 3px);
+    }
+
+    /* Mechanical Toll Booth */
+    .toll-booth-stand {
+      position: absolute;
+      bottom: 10px;
+      right: 25%;
+      width: 40px;
+      height: 75px;
+      background: #7f8c8d;
+      border: 4px solid #fff;
+      border-radius: 12px;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+      z-index: 10;
+    }
+
+    .toll-booth-cap {
+      position: absolute;
+      top: -10px;
+      left: -4px;
+      width: 40px;
+      height: 15px;
+      background: var(--pizza-red);
+      border: 3px solid #fff;
+      border-radius: 6px;
+    }
+
+    /* Pivot axis circle */
+    .gate-pivot {
+      position: absolute;
+      top: 15px;
+      left: 10px;
+      width: 16px;
+      height: 16px;
+      background: #2c3e50;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      z-index: 12;
+    }
+
+    /* Striped Gate Boom Barrier Arm */
+    .gate-barrier-arm {
+      position: absolute;
+      top: 19px;
+      right: calc(25% + 22px);
+      width: 160px;
+      height: 12px;
+      background: repeating-linear-gradient(90deg, #fff, #fff 15px, var(--pizza-red) 15px, var(--pizza-red) 30px);
+      border: 2px solid #2c3e50;
+      border-radius: 6px;
+      z-index: 11;
+      transform-origin: right center; /* rotates upwards pivoting from stand side */
+      transform: rotate(0deg);
+      transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Rotates mechanical barrier up to open lane */
+    .gate-barrier-arm.open-gate {
+      transform: rotate(-90deg);
+    }
+
+    /* Active vehicle placement */
+    .parked-vehicle {
+      position: absolute;
+      bottom: 25px;
+      left: 12%;
+      width: 120px;
+      height: 80px;
+      z-index: 5;
+    }
+
+    .vehicle-bounce {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: idleBob 0.3s ease-in-out infinite alternate;
+    }
+
+    @keyframes idleBob {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3px); }
+    }
+
+    .vehicle-bounce svg {
+      width: 90%;
+      height: 90%;
+      filter: drop-shadow(0 6px 4px rgba(0,0,0,0.2));
+    }
+
+    /* Coin Reward Popup Animation */
+    .reward-floating {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      font-size: 32px;
+      font-weight: 700;
+      color: #27ae60;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .reward-floating.animate-reward {
+      animation: floatingFloat 1.2s ease-out forwards;
+    }
+
+    @keyframes floatingFloat {
+      0% { transform: translateY(20px); opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(-50px); opacity: 0; }
+    }
+
+    /* RESPONSIVE SCALING */
+    @media (max-width: 600px) {
+      .choices-row {
+        gap: 12px;
+      }
+      .choice-btn {
+        width: 70px;
+        height: 70px;
+        font-size: 30px;
+      }
+      .math-visual-container {
+        font-size: 36px;
+      }
+      .pizza-item-svg {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HUD BAR -->
+  <header class="hud">
+    <a href="level_1.html" class="back-btn" id="backBtn">
+      <span>⬅ MAP</span>
+    </a>
+    
+    <div class="coin-container">
+      <div class="coin-icon">🪙</div>
+      <div class="coin-text" id="coinVal">250</div>
+    </div>
+  </header>
+
+  <!-- REWARD TELEMETRY FLOATER -->
+  <div class="reward-floating" id="rewardFloat">🪙 +20!</div>
+
+  <!-- GAMEPLAY AREA -->
+  <div class="checkpoint-layout">
+
+    <!-- PUZZLE CHALLENGE CONTAINER -->
+    <section class="puzzle-board" id="puzzleBoard">
+      
+      <!-- Math layout (Visible dynamically) -->
+      <div id="mathContainer" style="display: none; width: 100%;">
+        <h2 class="puzzle-title" style="color: var(--pizza-red);">Count and Add Pizza Slices! 🍕</h2>
+        <div class="math-visual-container" style="margin: 20px 0;">
+          <div class="pizza-count-group" id="mathGroupA">
+            <!-- slices dynamically loaded -->
+          </div>
+          <span>+</span>
+          <div class="pizza-count-group" id="mathGroupB">
+            <!-- slices dynamically loaded -->
+          </div>
+        </div>
+        <p class="puzzle-instructions">How many pizza slices are there all together?</p>
+      </div>
+
+      <!-- English layout (Visible dynamically) -->
+      <div id="englishContainer" style="display: none; width: 100%;">
+        <h2 class="puzzle-title">Match the Letters! 🎒</h2>
+        <div class="english-visual-container" style="margin: 20px 0;">
+          <div class="pizza-box-letter" id="uppercaseLetter">P</div>
+        </div>
+        <p class="puzzle-instructions">Find the lowercase match letter below!</p>
+      </div>
+
+      <!-- Challenge multiple choices -->
+      <div class="choices-row" id="choicesRow">
+        <button class="choice-btn" id="btn-opt1">1</button>
+        <button class="choice-btn" id="btn-opt2">2</button>
+        <button class="choice-btn" id="btn-opt3">3</button>
+      </div>
+
+      <!-- Unlocked success routing -->
+      <div class="success-panel" id="successPanel">
+        <span class="success-text">Correct! Gate is Opening! 🔔</span>
+        <a href="level_1.html" class="drive-on-btn" id="driveOnBtn">
+          <span>Drive On! 🚚</span>
+        </a>
+      </div>
+
+    </section>
+
+    <!-- TOLL BOOTH ROAD SCENERY -->
+    <section class="road-scenery">
+      <div class="road-lane">
+        <div class="road-dashed-line"></div>
+        
+        <!-- Equipped vehicle parked -->
+        <div class="parked-vehicle">
+          <div class="vehicle-bounce" id="vehicleBounce">
+            <!-- Dynamic SVG injected here -->
+          </div>
+        </div>
+
+        <!-- Striped Gate arm -->
+        <div class="gate-barrier-arm" id="barrierArm"></div>
+        
+        <!-- Toll Stand structure -->
+        <div class="toll-booth-stand">
+          <div class="toll-booth-cap"></div>
+          <div class="gate-pivot"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // --- LOCAL STORAGE VEHICLE SVGs ---
+    const vehicleSvgs = {
+      truck: `<svg viewBox="0 0 140 100">
+                <rect x="10" y="30" width="90" height="50" rx="12" fill="#ff4b4b" />
+                <path d="M100 38 h25 a15 15 0 0 1 10 15 v27 h-35 z" fill="#ff4b4b" />
+                <rect x="104" y="44" width="22" height="18" rx="4" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+                <rect x="25" y="18" width="55" height="12" rx="3" fill="#fbf0db" stroke="#d37d2f" stroke-width="2" />
+                <circle cx="30" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                <circle cx="105" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                <circle cx="30" cy="80" r="4" fill="#ffd016" />
+                <circle cx="105" cy="80" r="4" fill="#ffd016" />
+              </svg>`,
+      school_bus: `<svg viewBox="0 0 140 100">
+                    <rect x="10" y="20" width="115" height="60" rx="10" fill="#ffd016" />
+                    <rect x="15" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+                    <rect x="45" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+                    <rect x="75" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+                    <path d="M125 35 h8 a5 5 0 0 1 5 5 v40 h-13 z" fill="#ffd016" />
+                    <rect x="127" y="42" width="8" height="15" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                    <circle cx="32" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                    <circle cx="108" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                    <circle cx="32" cy="80" r="4" fill="#ff4b4b" />
+                    <circle cx="108" cy="80" r="4" fill="#ff4b4b" />
+                  </svg>`,
+      double_decker: `<svg viewBox="0 0 140 100">
+                        <rect x="10" y="45" width="115" height="35" fill="#c0392b" rx="6" />
+                        <rect x="10" y="15" width="115" height="32" fill="#ff4b4b" rx="6" />
+                        <rect x="8" y="10" width="119" height="6" rx="2" fill="#fff" />
+                        <rect x="18" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="44" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="70" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="18" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="44" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="70" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="96" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <circle cx="32" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                        <circle cx="108" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                        <circle cx="32" cy="80" r="4" fill="#ffd016" />
+                        <circle cx="108" cy="80" r="4" fill="#ffd016" />
+                      </svg>`
+    };
+
+    // --- PLAYFUL AUDIO SYNTHESIZER (WEB AUDIO API) ---
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // Hover sound (sweep)
+    function playHoverSound() {
+      initAudio();
+      if (!audioCtx) return;
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+
+    // Click pop sound
+    function playClickSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.12);
+    }
+
+    // Fail tone
+    function playFailSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.22);
+      
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 350;
+      
+      osc.disconnect(gain);
+      osc.connect(filter);
+      filter.connect(gain);
+
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.22);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.25);
+    }
+
+    // Triumph Fanfare
+    function playFanfareSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        gain.gain.setValueAtTime(0.12, now + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.35);
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.4);
+      });
+    }
+
+    // --- GAME ENGINE STATE & TELEMETRY ---
+    let playerCoins = 250;
+    let activeVehicle = 'truck';
+    let challengeType = 'math'; // 'math' or 'english'
+    let correctAnswer = '';
+
+    // DOM Elements
+    const coinValText = document.getElementById('coinVal');
+    const vehicleBounce = document.getElementById('vehicleBounce');
+    const mathContainer = document.getElementById('mathContainer');
+    const mathGroupA = document.getElementById('mathGroupA');
+    const mathGroupB = document.getElementById('mathGroupB');
+    const englishContainer = document.getElementById('englishContainer');
+    const uppercaseLetterEl = document.getElementById('uppercaseLetter');
+    const choicesRow = document.getElementById('choicesRow');
+    const successPanel = document.getElementById('successPanel');
+    const barrierArm = document.getElementById('barrierArm');
+    const rewardFloat = document.getElementById('rewardFloat');
+
+    const opt1 = document.getElementById('btn-opt1');
+    const opt2 = document.getElementById('btn-opt2');
+    const opt3 = document.getElementById('btn-opt3');
+
+    // --- PERSISTENCE ---
+    function loadState() {
+      const savedCoins = localStorage.getItem('pizza_coins');
+      const savedActive = localStorage.getItem('pizza_active_vehicle');
+
+      if (savedCoins !== null) {
+        playerCoins = parseInt(savedCoins, 10);
+      } else {
+        localStorage.setItem('pizza_coins', playerCoins);
+      }
+
+      if (savedActive !== null) {
+        activeVehicle = savedActive;
+      } else {
+        localStorage.setItem('pizza_active_vehicle', activeVehicle);
+      }
+
+      coinValText.textContent = playerCoins;
+    }
+
+    function addCoins(amount) {
+      playerCoins += amount;
+      localStorage.setItem('pizza_coins', playerCoins);
+      coinValText.textContent = playerCoins;
+      
+      // Floating text reward animation
+      rewardFloat.classList.add('animate-reward');
+      setTimeout(() => {
+        rewardFloat.classList.remove('animate-reward');
+      }, 1250);
+    }
+
+    // --- CHALLENGE BUILDER ---
+    const pizzaSliceSvg = `
+      <svg class="pizza-item-svg" viewBox="0 0 40 40">
+        <path d="M20 5 L35 32 A5 5 0 0 1 30 35 L10 35 A5 5 0 0 1 5 32 Z" fill="#d37d2f" stroke="#fff" stroke-width="2" />
+        <path d="M20 9 L31 30 A3 3 0 0 1 28 32 L12 32 A3 3 0 0 1 9 30 Z" fill="#ffd016" />
+        <!-- Pepperoni spots -->
+        <circle cx="20" cy="22" r="3" fill="#ff4b4b" />
+        <circle cx="16" cy="28" r="2.5" fill="#ff4b4b" />
+        <circle cx="24" cy="27" r="2.5" fill="#ff4b4b" />
+      </svg>
+    `;
+
+    // English letters list: matches capital letter (box display) and choice lowercase options
+    // Distractor elements are targeted mirror letters (b,d,p,q) to boost letter structure learning.
+    const lettersPool = [
+      { upper: 'A', lower: 'a', distractors: ['o', 'e'] },
+      { upper: 'B', lower: 'b', distractors: ['d', 'p'] },
+      { upper: 'D', lower: 'd', distractors: ['b', 'q'] },
+      { upper: 'P', lower: 'p', distractors: ['q', 'b'] },
+      { upper: 'T', lower: 't', distractors: ['f', 'l'] },
+      { upper: 'H', lower: 'h', distractors: ['n', 'm'] },
+      { upper: 'G', lower: 'g', distractors: ['q', 'y'] },
+      { upper: 'R', lower: 'r', distractors: ['n', 'v'] }
+    ];
+
+    function generateChallenge() {
+      // Pick random challenge type
+      challengeType = Math.random() < 0.5 ? 'math' : 'english';
+      
+      if (challengeType === 'math') {
+        mathContainer.style.display = 'block';
+        englishContainer.style.display = 'none';
+
+        const A = Math.floor(Math.random() * 3) + 1; // 1 to 3
+        const B = Math.floor(Math.random() * 3) + 1; // 1 to 3
+        const sum = A + B;
+        correctAnswer = sum.toString();
+
+        // Load visual groups
+        mathGroupA.innerHTML = pizzaSliceSvg.repeat(A);
+        mathGroupB.innerHTML = pizzaSliceSvg.repeat(B);
+
+        // Generate choices
+        const opts = new Set([sum]);
+        while(opts.size < 3) {
+          const wrong = Math.floor(Math.random() * 5) + 2; // 2 to 6
+          opts.add(wrong);
+        }
+
+        const sortedOpts = Array.from(opts).sort((x, y) => x - y);
+        opt1.textContent = sortedOpts[0];
+        opt2.textContent = sortedOpts[1];
+        opt3.textContent = sortedOpts[2];
+
+      } else {
+        // English spelling challenge
+        mathContainer.style.display = 'none';
+        englishContainer.style.display = 'block';
+
+        const record = lettersPool[Math.floor(Math.random() * lettersPool.length)];
+        correctAnswer = record.lower;
+        
+        uppercaseLetterEl.textContent = record.upper;
+
+        // Shuffle options
+        const opts = [record.lower, ...record.distractors];
+        // Fisher-Yates shuffle
+        for (let i = opts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+
+        opt1.textContent = opts[0];
+        opt2.textContent = opts[1];
+        opt3.textContent = opts[2];
+      }
+    }
+
+    // Handle choice evaluation
+    function checkAnswer(btn) {
+      const selected = btn.textContent;
+      if (selected === correctAnswer) {
+        // Correct answer!
+        playFanfareSound();
+        addCoins(20);
+        
+        // Open Gate
+        barrierArm.classList.add('open-gate');
+
+        // Toggle UI panels
+        choicesRow.style.display = 'none';
+        successPanel.style.display = 'flex';
+      } else {
+        // Safe fail: buzz sound, shake button
+        playFailSound();
+        btn.classList.add('shake-error');
+        setTimeout(() => {
+          btn.classList.remove('shake-error');
+        }, 400);
+      }
+    }
+
+    // Bind multiple choice clicks
+    [opt1, opt2, opt3].forEach(btn => {
+      btn.addEventListener('mouseenter', () => playHoverSound());
+      btn.addEventListener('click', () => checkAnswer(btn));
+    });
+
+    // Sound styling elements
+    document.getElementById('backBtn').addEventListener('mouseenter', () => playHoverSound());
+    document.getElementById('backBtn').addEventListener('click', () => playClickSound());
+    document.getElementById('driveOnBtn').addEventListener('mouseenter', () => playHoverSound());
+    document.getElementById('driveOnBtn').addEventListener('click', () => playClickSound());
+
+    // Init
+    loadState();
+    // Render dynamic vehicle sprite
+    const svgCode = vehicleSvgs[activeVehicle] || vehicleSvgs.truck;
+    vehicleBounce.innerHTML = svgCode;
+
+    // Load dynamic challenge
+    generateChallenge();
+  </script>
+</body>
+</html>

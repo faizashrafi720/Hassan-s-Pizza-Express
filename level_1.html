@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hassan's Pizza Express - Level 1</title>
+  <!-- Google Fonts for playful, thick bubble text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* RESET & CORE DESIGN SYSTEM */
+    :root {
+      --pizza-red: #ff4b4b;
+      --pizza-red-dark: #cc3c3c;
+      --cheese-yellow: #ffd016;
+      --cheese-yellow-orange: #ffa800;
+      --crust-brown: #d37d2f;
+      --sky-blue: #a5f2ff;
+      --grass-green: #5ad13b;
+      --road-grey: #e2e8f0;
+      --coin-gold: #ffbd12;
+      --bubble-white: #ffffff;
+      --text-dark: #2c3e50;
+      --font-playful: 'Fredoka', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    body {
+      font-family: var(--font-playful);
+      background: var(--sky-blue);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* HUD BAR */
+    .hud {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 15px 20px 5px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .back-btn {
+      background: linear-gradient(to bottom, #f39c12, #d35400);
+      border: 3px solid #fff;
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-family: var(--font-playful);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 #933c04, 0 6px 12px rgba(0,0,0,0.15);
+      transition: all 0.1s;
+      text-decoration: none;
+    }
+
+    .back-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #933c04;
+    }
+
+    .coin-container {
+      background: var(--bubble-white);
+      border-radius: 50px;
+      padding: 6px 18px 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+      border: 3px solid var(--coin-gold);
+    }
+
+    .coin-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #ffd700, #ff9900);
+      border: 3px solid #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      animation: bounceCoin 1s infinite alternate;
+    }
+
+    @keyframes bounceCoin {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-4px); }
+    }
+
+    .coin-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    /* SCREEN SPLIT LAYOUT */
+    .game-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 80px);
+      padding: 10px;
+      gap: 10px;
+    }
+
+    /* MAP PANEL (70% height) */
+    .map-panel {
+      flex: 7;
+      background: #cbf5cb;
+      border: 8px solid #7be37b;
+      border-radius: 35px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 4x4 Map Grid */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      width: 92%;
+      height: 92%;
+      max-width: 480px;
+      max-height: 480px;
+      background: var(--grass-green);
+      border-radius: 20px;
+      border: 6px solid #48b72c;
+      position: relative;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    /* Individual Tile styling */
+    .tile {
+      border: 1px solid rgba(255,255,255,0.25);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      transition: background-color 0.3s;
+    }
+
+    /* Road Tiles */
+    .tile-road {
+      background: var(--road-grey);
+      border: 1px dashed #cbd5e1;
+    }
+
+    /* Grass/Obstacle Tiles */
+    .tile-obstacle {
+      background: var(--grass-green);
+      overflow: hidden;
+    }
+
+    .obstacle-sprite {
+      font-size: 32px;
+      filter: drop-shadow(0 4px 0px rgba(0,0,0,0.15));
+      animation: gentleShake 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes gentleShake {
+      0% { transform: rotate(-5deg); }
+      100% { transform: rotate(5deg); }
+    }
+
+    /* Start Tile */
+    .tile-start {
+      background: #ffeaa7;
+      border: 4px solid var(--cheese-yellow);
+      border-radius: 12px;
+      z-index: 2;
+    }
+
+    .start-label {
+      position: absolute;
+      bottom: 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #d35400;
+      background: #fff;
+      padding: 1px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--cheese-yellow);
+    }
+
+    /* Target Tile */
+    .tile-target {
+      background: #ffcccc;
+      border: 4px solid var(--pizza-red);
+      border-radius: 12px;
+      z-index: 2;
+    }
+
+    .target-label {
+      position: absolute;
+      bottom: 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--pizza-red-dark);
+      background: #fff;
+      padding: 1px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--pizza-red);
+    }
+
+    /* VEHICLE SPRITE (GRID PLACEMENT) */
+    .vehicle-token {
+      position: absolute;
+      width: 25%;
+      height: 25%;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      pointer-events: none;
+    }
+
+    /* Dynamic SVG size constraints */
+    .vehicle-token svg {
+      width: 80%;
+      height: 80%;
+      filter: drop-shadow(0 6px 4px rgba(0,0,0,0.2));
+    }
+
+    /* Vehicle bounce/idle inside grid */
+    .vehicle-bounce {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: drivingBob 0.3s ease-in-out infinite alternate;
+    }
+
+    @keyframes drivingBob {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-3px); }
+    }
+
+    .vehicle-crash-shake {
+      animation: crashShake 0.4s ease-in-out !important;
+    }
+
+    @keyframes crashShake {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      20%, 60% { transform: scale(1.1) rotate(-15deg); }
+      40%, 80% { transform: scale(1.1) rotate(15deg); }
+    }
+
+    /* COMMAND DASHBOARD (30% height) */
+    .command-panel {
+      flex: 3;
+      background: var(--bubble-white);
+      border: 8px solid #dfe6e9;
+      border-radius: 35px;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.05);
+      display: grid;
+      grid-template-columns: 2.2fr 3.8fr 2fr;
+      padding: 15px;
+      gap: 15px;
+      z-index: 5;
+    }
+
+    .panel-section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      color: #95a5a6;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    /* 1. Arrow Command Bank */
+    .command-bank {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    .cmd-btn {
+      aspect-ratio: 1.4;
+      border: 3px solid #fff;
+      border-radius: 18px;
+      font-family: var(--font-playful);
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+      transition: all 0.1s;
+    }
+
+    .cmd-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+    }
+
+    .cmd-up { background: #2ecc71; box-shadow: 0 4px 0 #27ae60; }
+    .cmd-down { background: #e67e22; box-shadow: 0 4px 0 #d35400; }
+    .cmd-left { background: #3498db; box-shadow: 0 4px 0 #2980b9; }
+    .cmd-right { background: #f1c40f; box-shadow: 0 4px 0 #f39c12; }
+
+    /* 2. Drag & Click Slots Queue */
+    .sequence-slots-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sequence-row {
+      display: flex;
+      gap: 8px;
+      background: #f1f2f6;
+      border-radius: 20px;
+      padding: 10px;
+      border: 3px dashed #bdc3c7;
+      width: 100%;
+      height: 76px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slot-block {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      border: 3px dashed #bdc3c7;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      cursor: pointer;
+      animation: popSlot 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popSlot {
+      0% { transform: scale(0.5); }
+      100% { transform: scale(1); }
+    }
+
+    .slot-filled {
+      border: 3px solid #fff;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+    }
+
+    /* Helper styles for filled slots based on command direction */
+    .filled-UP { background: #2ecc71; }
+    .filled-DOWN { background: #e67e22; }
+    .filled-LEFT { background: #3498db; }
+    .filled-RIGHT { background: #f1c40f; }
+
+    .clear-btn {
+      background: #95a5a6;
+      border: 2px solid #fff;
+      border-radius: 12px;
+      padding: 4px 12px;
+      color: #fff;
+      font-family: var(--font-playful);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* 3. Execution GO Button */
+    .go-btn {
+      width: 100%;
+      max-width: 150px;
+      height: 80px;
+      background: linear-gradient(to bottom, #2ecc71, #27ae60);
+      border: 4px solid #fff;
+      border-radius: 25px;
+      color: #fff;
+      font-family: var(--font-playful);
+      font-size: 26px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 0 #1b6c32, 0 10px 15px rgba(46, 204, 113, 0.2);
+      transition: all 0.1s;
+    }
+
+    .go-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #1b6c32;
+    }
+
+    .go-btn.running {
+      background: #bdc3c7;
+      box-shadow: none;
+      transform: translateY(4px);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* MODAL: LEVEL COMPLETED FANFARE */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(44, 62, 80, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 100;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--bubble-white);
+      width: 90%;
+      max-width: 420px;
+      border-radius: 35px;
+      padding: 40px 30px;
+      border: 8px solid var(--cheese-yellow);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+      text-align: center;
+      transform: scale(0.8) rotate(-4deg);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-backdrop.active .modal-content {
+      transform: scale(1) rotate(0deg);
+    }
+
+    .modal-title {
+      font-size: 34px;
+      color: #27ae60;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .modal-emoji {
+      font-size: 64px;
+      margin: 15px 0;
+      animation: popCelebrate 0.5s ease-out infinite alternate;
+    }
+
+    @keyframes popCelebrate {
+      0% { transform: scale(1) rotate(-10deg); }
+      100% { transform: scale(1.15) rotate(10deg); }
+    }
+
+    .modal-desc {
+      font-size: 18px;
+      color: #535c68;
+      margin-bottom: 25px;
+      line-height: 1.4;
+    }
+
+    .modal-reward {
+      background: #fef9e7;
+      border: 3px solid var(--coin-gold);
+      border-radius: 20px;
+      padding: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #d35400;
+      margin-bottom: 25px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(to bottom, #2ecc71, #27ae60);
+      border: 4px solid #fff;
+      border-radius: 20px;
+      font-family: var(--font-playful);
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #1b6c32;
+      transition: all 0.1s;
+    }
+
+    .modal-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #1b6c32;
+    }
+
+    /* ERROR FEEDBACK HUD BANNER */
+    .error-banner {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff7675;
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 20px;
+      border: 3px solid #fff;
+      font-weight: 700;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      z-index: 15;
+      transition: top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .error-banner.visible {
+      top: 15px;
+    }
+
+    /* RESPONSIVE SCALING */
+    @media (max-width: 768px) {
+      .command-panel {
+        grid-template-columns: 1fr;
+        height: auto;
+        gap: 15px;
+      }
+      .command-bank {
+        max-width: 100%;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .game-layout {
+        overflow-y: auto;
+      }
+      .map-panel {
+        min-height: 340px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HUD BAR -->
+  <header class="hud">
+    <a href="pizza_menu.html" class="back-btn" id="backBtn">
+      <span>⬅ MENU</span>
+    </a>
+    
+    <div class="coin-container">
+      <div class="coin-icon">🪙</div>
+      <div class="coin-text" id="coinVal">250</div>
+    </div>
+  </header>
+
+  <!-- GAMEPLAY AREA -->
+  <div class="game-layout">
+
+    <!-- DELIVERY GRID MAP -->
+    <section class="map-panel">
+      <!-- Error Notification Banner -->
+      <div class="error-banner" id="errorBanner">Oops! Let's try another path! 🤔</div>
+
+      <div class="grid-container" id="gridMap">
+        <!-- Rendered Dynamically in JS -->
+      </div>
+
+      <!-- Vehicle Token -->
+      <div class="vehicle-token" id="vehicleToken">
+        <div class="vehicle-bounce" id="vehicleBounce">
+          <!-- Active vehicle SVG injected here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRAMMING PANEL -->
+    <section class="command-panel" id="dashboard">
+      
+      <!-- 1. Directional Buttons -->
+      <div class="panel-section">
+        <span class="panel-title">Add Moves</span>
+        <div class="command-bank">
+          <button class="cmd-btn cmd-up" data-dir="UP">🔼</button>
+          <button class="cmd-btn cmd-left" data-dir="LEFT">◀️</button>
+          <button class="cmd-btn cmd-right" data-dir="RIGHT">▶️</button>
+          <button class="cmd-btn cmd-down" data-dir="DOWN">🔽</button>
+        </div>
+      </div>
+
+      <!-- 2. Program Sequence Slots -->
+      <div class="panel-section">
+        <div class="sequence-slots-wrapper">
+          <span class="panel-title">Your Order Checklist (Tap to Remove)</span>
+          <div class="sequence-row" id="slotsRow">
+            <!-- 5 Slots filled dynamically -->
+            <div class="slot-block" data-idx="0"></div>
+            <div class="slot-block" data-idx="1"></div>
+            <div class="slot-block" data-idx="2"></div>
+            <div class="slot-block" data-idx="3"></div>
+            <div class="slot-block" data-idx="4"></div>
+          </div>
+          <button class="clear-btn" id="clearBtn">🗑️ Clear Checklist</button>
+        </div>
+      </div>
+
+      <!-- 3. Go Trigger -->
+      <div class="panel-section">
+        <span class="panel-title">Start Delivery!</span>
+        <button class="go-btn" id="goBtn">GO! 🍕</button>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- SUCCESS MODAL (LEVEL COMPLETED) -->
+  <div class="modal-backdrop" id="winModal">
+    <div class="modal-content">
+      <h2 class="modal-title">Pizza Delivered! 🎉</h2>
+      <div class="modal-emoji">🎒🏆</div>
+      <p class="modal-desc">Awesome logic coding, Hassan! The students are eating hot, cheesy pizza!</p>
+      
+      <div class="modal-reward">
+        <span>🪙 +50 Coins Added!</span>
+      </div>
+
+      <button class="modal-btn" id="nextLevelBtn">Next Delivery! 🚀</button>
+    </div>
+  </div>
+
+  <script>
+    // --- LOCAL STORAGE VEHICLE SVGs ---
+    const vehicleSvgs = {
+      truck: `<svg viewBox="0 0 140 100">
+                <rect x="10" y="30" width="90" height="50" rx="12" fill="#ff4b4b" />
+                <path d="M100 38 h25 a15 15 0 0 1 10 15 v27 h-35 z" fill="#ff4b4b" />
+                <rect x="104" y="44" width="22" height="18" rx="4" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+                <rect x="25" y="18" width="55" height="12" rx="3" fill="#fbf0db" stroke="#d37d2f" stroke-width="2" />
+                <circle cx="30" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                <circle cx="105" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                <circle cx="30" cy="80" r="4" fill="#ffd016" />
+                <circle cx="105" cy="80" r="4" fill="#ffd016" />
+              </svg>`,
+      school_bus: `<svg viewBox="0 0 140 100">
+                    <rect x="10" y="20" width="115" height="60" rx="10" fill="#ffd016" />
+                    <rect x="15" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+                    <rect x="45" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+                    <rect x="75" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+                    <path d="M125 35 h8 a5 5 0 0 1 5 5 v40 h-13 z" fill="#ffd016" />
+                    <rect x="127" y="42" width="8" height="15" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                    <circle cx="32" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                    <circle cx="108" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                    <circle cx="32" cy="80" r="4" fill="#ff4b4b" />
+                    <circle cx="108" cy="80" r="4" fill="#ff4b4b" />
+                  </svg>`,
+      double_decker: `<svg viewBox="0 0 140 100">
+                        <rect x="10" y="45" width="115" height="35" fill="#c0392b" rx="6" />
+                        <rect x="10" y="15" width="115" height="32" fill="#ff4b4b" rx="6" />
+                        <rect x="8" y="10" width="119" height="6" rx="2" fill="#fff" />
+                        <rect x="18" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="44" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="70" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="18" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="44" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="70" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <rect x="96" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+                        <circle cx="32" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                        <circle cx="108" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+                        <circle cx="32" cy="80" r="4" fill="#ffd016" />
+                        <circle cx="108" cy="80" r="4" fill="#ffd016" />
+                      </svg>`
+    };
+
+    // --- PLAYFUL AUDIO SYNTHESIZER (WEB AUDIO API) ---
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // Gentle upward sweep for hovering over UI elements
+    function playHoverSound() {
+      initAudio();
+      if (!audioCtx) return;
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+
+    // Pop sound for clicks/adds
+    function playClickSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.12);
+    }
+
+    // Crash buzzer sound
+    function playCrashSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.25);
+      
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 350;
+      
+      osc.disconnect(gain);
+      osc.connect(filter);
+      filter.connect(gain);
+
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.28);
+    }
+
+    // Triumphant Fanfare (C-Major triad arpeggio)
+    function playFanfareSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      const notes = [
+        { f: 523.25, time: 0 },    // C5
+        { f: 659.25, time: 0.1 },  // E5
+        { f: 783.99, time: 0.2 },  // G5
+        { f: 1046.50, time: 0.3 }  // C6
+      ];
+
+      notes.forEach(note => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(note.f, now + note.time);
+        
+        gain.gain.setValueAtTime(0.12, now + note.time);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + note.time + 0.4);
+        
+        osc.start(now + note.time);
+        osc.stop(now + note.time + 0.45);
+      });
+    }
+
+    // Small engine rumble step tone
+    function playStepSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(110, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(160, audioCtx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.22);
+    }
+
+
+    // --- GRID COORDINATE MAP DEFINITION ---
+    // x = column index (0..3), y = row index (0..3)
+    // Map Layout:
+    // S R O R   (Start, Road, Obstacle, Road)
+    // R R R R   (Road, Road, Road, Road)
+    // R O R T   (Road, Obstacle, Road, Target)
+    // R R O R   (Road, Road, Obstacle, Road)
+
+    const startPos = { x: 0, y: 0 };
+    const targetPos = { x: 3, y: 2 };
+    
+    // Grid maps: 0 = Road, 1 = Obstacle/Wall, 2 = Start, 3 = Target
+    const gridMapArray = [
+      [2, 0, 1, 0], // row 0
+      [0, 0, 0, 0], // row 1
+      [0, 1, 0, 3], // row 2
+      [0, 0, 1, 0]  // row 3
+    ];
+
+    const obstacles = [
+      { x: 2, y: 0, emoji: '🏡' }, // House
+      { x: 1, y: 2, emoji: '🌳' }, // Tree Park
+      { x: 2, y: 3, emoji: '🚧' }  // Construction block
+    ];
+
+    // --- GAME ENGINE STATE ---
+    let playerCoins = 250;
+    let activeVehicle = 'truck';
+    let currentPos = { ...startPos };
+    let sequenceQueue = []; // array of 'UP', 'DOWN', 'LEFT', 'RIGHT' (max 5)
+    let isExecuting = false;
+
+    // DOM References
+    const gridMap = document.getElementById('gridMap');
+    const vehicleToken = document.getElementById('vehicleToken');
+    const vehicleBounce = document.getElementById('vehicleBounce');
+    const coinValText = document.getElementById('coinVal');
+    const slotsRow = document.getElementById('slotsRow');
+    const errorBanner = document.getElementById('errorBanner');
+    const goBtn = document.getElementById('goBtn');
+    const winModal = document.getElementById('winModal');
+
+    // --- PERSISTENCE ---
+    function loadState() {
+      const savedCoins = localStorage.getItem('pizza_coins');
+      const savedActive = localStorage.getItem('pizza_active_vehicle');
+
+      if (savedCoins !== null) {
+        playerCoins = parseInt(savedCoins, 10);
+      } else {
+        localStorage.setItem('pizza_coins', playerCoins);
+      }
+
+      if (savedActive !== null) {
+        activeVehicle = savedActive;
+      } else {
+        localStorage.setItem('pizza_active_vehicle', activeVehicle);
+      }
+
+      coinValText.textContent = playerCoins;
+    }
+
+    function addCoins(amount) {
+      playerCoins += amount;
+      localStorage.setItem('pizza_coins', playerCoins);
+      coinValText.textContent = playerCoins;
+    }
+
+    // --- RENDER GRID MAP ---
+    function renderMap() {
+      gridMap.innerHTML = '';
+      for (let y = 0; y < 4; y++) {
+        for (let x = 0; x < 4; x++) {
+          const tileType = gridMapArray[y][x];
+          const tile = document.createElement('div');
+          tile.className = 'tile';
+          
+          if (tileType === 2) {
+            tile.classList.add('tile-start');
+            tile.innerHTML = `🏪<span class="start-label">Start</span>`;
+          } else if (tileType === 3) {
+            tile.classList.add('tile-target');
+            tile.innerHTML = `🏫<span class="target-label">School</span>`;
+          } else if (tileType === 1) {
+            tile.classList.add('tile-obstacle');
+            // find which obstacle emoji belongs here
+            const obs = obstacles.find(o => o.x === x && o.y === y);
+            const emoji = obs ? obs.emoji : '🏡';
+            tile.innerHTML = `<span class="obstacle-sprite">${emoji}</span>`;
+          } else {
+            tile.classList.add('tile-road');
+          }
+          gridMap.appendChild(tile);
+        }
+      }
+      positionVehicle();
+    }
+
+    // Update SVG position based on coordinates
+    function positionVehicle() {
+      // Calculate top/left percentages
+      const xPercent = currentPos.x * 25;
+      const yPercent = currentPos.y * 25;
+      vehicleToken.style.left = `${xPercent}%`;
+      vehicleToken.style.top = `${yPercent}%`;
+    }
+
+    // Dynamic vehicle SVG loading
+    function loadVehicleSprite() {
+      const svgCode = vehicleSvgs[activeVehicle] || vehicleSvgs.truck;
+      vehicleBounce.innerHTML = svgCode;
+    }
+
+    // --- SEQUENCING INTERACTION ---
+    const arrows = {
+      UP: '🔼',
+      DOWN: '🔽',
+      LEFT: '◀️',
+      RIGHT: '▶️'
+    };
+
+    function updateSequenceUI() {
+      const slots = document.querySelectorAll('.slot-block');
+      slots.forEach((slot, idx) => {
+        const cmd = sequenceQueue[idx];
+        slot.className = 'slot-block'; // reset classes
+        slot.innerHTML = '';
+
+        if (cmd) {
+          slot.classList.add('slot-filled', `filled-${cmd}`);
+          slot.textContent = arrows[cmd];
+        }
+      });
+    }
+
+    // Click-to-add command
+    document.querySelectorAll('.cmd-btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => playHoverSound());
+      btn.addEventListener('click', () => {
+        if (isExecuting) return;
+        if (sequenceQueue.length < 5) {
+          playClickSound();
+          const dir = btn.getAttribute('data-dir');
+          sequenceQueue.push(dir);
+          updateSequenceUI();
+        } else {
+          // shake sequence row briefly as feedback
+          slotsRow.classList.add('vehicle-crash-shake');
+          playCrashSound();
+          setTimeout(() => slotsRow.classList.remove('vehicle-crash-shake'), 400);
+        }
+      });
+    });
+
+    // Click on sequence slot to remove
+    document.querySelectorAll('.slot-block').forEach(slot => {
+      slot.addEventListener('click', () => {
+        if (isExecuting) return;
+        const idx = parseInt(slot.getAttribute('data-idx'), 10);
+        if (idx < sequenceQueue.length) {
+          playClickSound();
+          sequenceQueue.splice(idx, 1);
+          updateSequenceUI();
+        }
+      });
+    });
+
+    // Clear whole list
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      if (isExecuting) return;
+      playClickSound();
+      sequenceQueue = [];
+      updateSequenceUI();
+    });
+
+    // --- PATH EXECUTION LOGIC ---
+    goBtn.addEventListener('mouseenter', () => {
+      if (!isExecuting) playHoverSound();
+    });
+
+    goBtn.addEventListener('click', () => {
+      if (isExecuting || sequenceQueue.length === 0) return;
+      executeSequence();
+    });
+
+    function executeSequence() {
+      isExecuting = true;
+      goBtn.classList.add('running');
+      goBtn.textContent = 'DRIVING';
+      
+      let stepIndex = 0;
+      
+      const interval = setInterval(() => {
+        if (stepIndex >= sequenceQueue.length) {
+          clearInterval(interval);
+          validateFinalPosition();
+          return;
+        }
+
+        const cmd = sequenceQueue[stepIndex];
+        playStepSound();
+        
+        let nextPos = { ...currentPos };
+
+        switch (cmd) {
+          case 'UP': nextPos.y -= 1; break;
+          case 'DOWN': nextPos.y += 1; break;
+          case 'LEFT': nextPos.x -= 1; break;
+          case 'RIGHT': nextPos.x += 1; break;
+        }
+
+        // Validate movement boundaries & obstacles immediately
+        if (
+          nextPos.x < 0 || nextPos.x > 3 || 
+          nextPos.y < 0 || nextPos.y > 3 || 
+          gridMapArray[nextPos.y][nextPos.x] === 1
+        ) {
+          clearInterval(interval);
+          handleCrash();
+          return;
+        }
+
+        // Apply visual position
+        currentPos = nextPos;
+        positionVehicle();
+
+        stepIndex++;
+      }, 600);
+    }
+
+    function handleCrash() {
+      playCrashSound();
+      
+      // Visual feedback: shake vehicle token
+      vehicleToken.classList.add('vehicle-crash-shake');
+      errorBanner.classList.add('visible');
+
+      setTimeout(() => {
+        vehicleToken.classList.remove('vehicle-crash-shake');
+        // Reset vehicle to start
+        currentPos = { ...startPos };
+        positionVehicle();
+        
+        isExecuting = false;
+        goBtn.classList.remove('running');
+        goBtn.textContent = 'GO! 🍕';
+
+        // Hide banner shortly
+        setTimeout(() => {
+          errorBanner.classList.remove('visible');
+        }, 1500);
+      }, 500);
+    }
+
+    function validateFinalPosition() {
+      if (currentPos.x === targetPos.x && currentPos.y === targetPos.y) {
+        // Success Fanfare!
+        playFanfareSound();
+        addCoins(50);
+        
+        // Show success modal
+        setTimeout(() => {
+          winModal.classList.add('active');
+        }, 500);
+      } else {
+        // Safe fail: didn't reach target, just return to start
+        handleCrash();
+      }
+    }
+
+    // Modal navigation
+    document.getElementById('nextLevelBtn').addEventListener('click', () => {
+      playClickSound();
+      winModal.classList.remove('active');
+      window.location.href = 'toll_booth.html';
+    });
+
+    // Sound Hover for Back button
+    document.getElementById('backBtn').addEventListener('mouseenter', () => playHoverSound());
+    document.getElementById('backBtn').addEventListener('click', () => playClickSound());
+
+    // Init Level
+    loadState();
+    loadVehicleSprite();
+    renderMap();
+  </script>
+</body>
+</html>

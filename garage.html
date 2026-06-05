@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hassan's Pizza Express - The Garage</title>
+  <!-- Google Fonts for playful, thick bubble text -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* RESET & CORE DESIGN SYSTEM */
+    :root {
+      --pizza-red: #ff4b4b;
+      --pizza-red-dark: #cc3c3c;
+      --cheese-yellow: #ffd016;
+      --cheese-yellow-orange: #ffa800;
+      --crust-brown: #d37d2f;
+      --garage-bg-start: #34495e;
+      --garage-bg-end: #2c3e50;
+      --floor-grey: #7f8c8d;
+      --floor-grey-dark: #687374;
+      --coin-gold: #ffbd12;
+      --bubble-white: #ffffff;
+      --text-dark: #2c3e50;
+      --font-playful: 'Fredoka', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    body {
+      font-family: var(--font-playful);
+      background: linear-gradient(to bottom, var(--garage-bg-start), var(--garage-bg-end));
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      position: relative;
+      padding-bottom: 50px;
+    }
+
+    /* GARAGE WALL STYLING & TOOLS IN BACKGROUND */
+    .garage-decorations {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.15;
+      background-image: 
+        radial-gradient(circle at 10% 20%, #fff 2px, transparent 2px),
+        radial-gradient(circle at 90% 80%, #fff 2px, transparent 2px);
+      background-size: 100px 100px;
+    }
+
+    /* Hanging tools and decorations */
+    .banner-bunting {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 35px;
+      background: repeating-linear-gradient(45deg, var(--pizza-red), var(--pizza-red) 15px, var(--cheese-yellow) 15px, var(--cheese-yellow) 30px);
+      border-bottom: 5px solid #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 2;
+    }
+
+    /* HUD CONTROLS */
+    .hud {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 50px 30px 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .back-btn {
+      background: linear-gradient(to bottom, #f39c12, #d35400);
+      border: 4px solid #fff;
+      border-radius: 25px;
+      padding: 10px 24px;
+      font-family: var(--font-playful);
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 0 #933c04, 0 10px 20px rgba(0,0,0,0.2);
+      transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #933c04, 0 15px 25px rgba(0,0,0,0.3);
+    }
+
+    .back-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #933c04, 0 5px 10px rgba(0,0,0,0.15);
+    }
+
+    .coin-container {
+      background: var(--bubble-white);
+      border-radius: 50px;
+      padding: 8px 24px 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.2), 0 0 20px rgba(255, 208, 22, 0.2);
+      border: 4px solid var(--coin-gold);
+      transition: transform 0.2s ease;
+    }
+
+    .coin-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #ffd700, #ff9900);
+      border: 4px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      animation: pulseCoin 2s infinite alternate;
+    }
+
+    @keyframes pulseCoin {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1) rotate(15deg); }
+    }
+
+    .coin-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-dark);
+      text-shadow: 1px 1px 0 #fff;
+    }
+
+    /* GARAGE VEHICLE CONTAINER */
+    .garage-title {
+      text-align: center;
+      font-size: 40px;
+      color: #fff;
+      margin: 10px 0 30px 0;
+      text-shadow: 0 6px 0 rgba(0,0,0,0.2);
+      letter-spacing: 1px;
+      z-index: 5;
+      position: relative;
+    }
+
+    .vehicle-showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+      width: 90%;
+      max-width: 1100px;
+      margin: 0 auto;
+      z-index: 5;
+      position: relative;
+    }
+
+    /* CARD STYLING */
+    .vehicle-card {
+      background: var(--bubble-white);
+      border-radius: 35px;
+      border: 8px solid #bdc3c7;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .vehicle-card.active-vehicle {
+      border-color: var(--cheese-yellow);
+      box-shadow: 0 15px 35px rgba(255, 208, 22, 0.35);
+    }
+
+    .vehicle-card.active-vehicle::before {
+      content: 'Selected 🌟';
+      position: absolute;
+      top: 15px;
+      right: -30px;
+      background: var(--cheese-yellow);
+      color: var(--text-dark);
+      padding: 5px 30px;
+      font-size: 12px;
+      font-weight: 700;
+      transform: rotate(45deg);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    .vehicle-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+    }
+
+    /* GENTLE ENGINE IDLE VIBRATION */
+    .vehicle-sprite-container {
+      width: 100%;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .vehicle-sprite {
+      width: 160px;
+      height: 110px;
+      animation: engineIdle 0.25s linear infinite alternate;
+      transform-origin: bottom center;
+    }
+
+    @keyframes engineIdle {
+      0% { transform: translateY(0) scaleY(1); }
+      100% { transform: translateY(-2px) scaleY(1.02); }
+    }
+
+    /* CARD NAME & DESCRIPTION */
+    .vehicle-name {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-dark);
+      text-align: center;
+    }
+
+    /* VISUAL STATS BARS FOR KIDS */
+    .stats-container {
+      width: 100%;
+      background: #f8f9fa;
+      border-radius: 20px;
+      padding: 15px;
+      border: 3px dashed #dfe6e9;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stat-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #7f8c8d;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-bar-visual {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      height: 24px;
+    }
+
+    /* Capacity: represented by little mini pizza slices */
+    .pizza-indicator {
+      font-size: 22px;
+      animation: popIndicator 0.3s ease-out;
+    }
+
+    /* Speed: represented by colorful visual dash blocks */
+    .speed-block {
+      flex: 1;
+      height: 14px;
+      background: #dfe6e9;
+      border-radius: 6px;
+      border: 2px solid #b2bec3;
+      transition: background-color 0.3s ease;
+    }
+
+    .speed-block.fill-active {
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      border-color: #27ae60;
+    }
+
+    @keyframes popIndicator {
+      0% { transform: scale(0); }
+      80% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* INVESTMENT ROI INSIGHT (GROWN-UP/TELEMETRY METRIC) */
+    .roi-badge {
+      font-size: 13px;
+      background: #e8f8f5;
+      color: #117a65;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-align: center;
+      border: 1px solid #a3e4d7;
+    }
+
+    /* INTERACTIVE BUTTONS */
+    .action-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 20px;
+      font-family: var(--font-playful);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Status classes */
+    .btn-buy {
+      background: linear-gradient(to bottom, #2ecc71, #27ae60);
+      color: #fff;
+      border: 4px solid #fff;
+      box-shadow: 0 6px 0 #1e7e34, 0 10px 15px rgba(46, 204, 113, 0.2);
+    }
+
+    .btn-buy:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #1e7e34, 0 15px 25px rgba(46, 204, 113, 0.3);
+    }
+
+    .btn-buy:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #1e7e34, 0 5px 10px rgba(46, 204, 113, 0.15);
+    }
+
+    .btn-equip {
+      background: linear-gradient(to bottom, #3498db, #2980b9);
+      color: #fff;
+      border: 4px solid #fff;
+      box-shadow: 0 6px 0 #21618c, 0 10px 15px rgba(52, 152, 219, 0.2);
+    }
+
+    .btn-equip:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #21618c, 0 15px 25px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-equip:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #21618c, 0 5px 10px rgba(52, 152, 219, 0.15);
+    }
+
+    .btn-equipped {
+      background: #dfe6e9;
+      color: #7f8c8d;
+      border: 4px solid #bdc3c7;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    /* ERROR COIN SHAKE ANIMATION */
+    .coin-error-shake {
+      animation: coinShakeFrame 0.4s ease-in-out;
+      border-color: var(--pizza-red) !important;
+      box-shadow: 0 0 20px rgba(255, 75, 75, 0.4) !important;
+    }
+
+    @keyframes coinShakeFrame {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    /* GROUND FLOOR OF GARAGE */
+    .garage-floor {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 12vh;
+      background: linear-gradient(to bottom, var(--floor-grey), var(--floor-grey-dark));
+      border-top: 10px solid #95a5a6;
+      z-index: 2;
+      box-shadow: 0 -8px 20px rgba(0,0,0,0.15);
+    }
+
+    /* RESPONSIVE SCALING */
+    @media (max-width: 768px) {
+      .hud {
+        padding: 40px 15px 15px 15px;
+      }
+      .garage-title {
+        font-size: 32px;
+      }
+      .vehicle-showcase {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND DECORATIONS -->
+  <div class="banner-bunting"></div>
+  <div class="garage-decorations"></div>
+
+  <!-- HUD BAR -->
+  <header class="hud">
+    <a href="pizza_menu.html" class="back-btn" id="backBtn">
+      <span>⬅ MENU</span>
+    </a>
+    
+    <div class="coin-container" id="coinCounter">
+      <div class="coin-icon">🪙</div>
+      <div class="coin-text" id="coinVal">250</div>
+    </div>
+  </header>
+
+  <h1 class="garage-title">Hassan's Upgrade Garage 🛠️</h1>
+
+  <!-- VEHICLE UPGRADES GRID -->
+  <main class="vehicle-showcase">
+
+    <!-- VEHICLE 1: BASIC DELIVER TRUCK -->
+    <section class="vehicle-card" id="card-truck">
+      <div class="vehicle-sprite-container">
+        <!-- SVG Truck Sprite -->
+        <svg class="vehicle-sprite" viewBox="0 0 140 100">
+          <!-- Bobbing container inside SVG -->
+          <g>
+            <rect x="10" y="30" width="90" height="50" rx="12" fill="#ff4b4b" />
+            <path d="M100 38 h25 a15 15 0 0 1 10 15 v27 h-35 z" fill="#ff4b4b" />
+            <rect x="104" y="44" width="22" height="18" rx="4" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+            <rect x="25" y="18" width="55" height="12" rx="3" fill="#fbf0db" stroke="#d37d2f" stroke-width="2" />
+            <circle cx="30" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+            <circle cx="105" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+            <circle cx="30" cy="80" r="4" fill="#ffd016" />
+            <circle cx="105" cy="80" r="4" fill="#ffd016" />
+            <text x="32" y="27" font-family="'Fredoka'" font-size="10" fill="#2c3e50" font-weight="bold">🍕 TRUCK</text>
+          </g>
+        </svg>
+      </div>
+
+      <h2 class="vehicle-name">Delivery Truck</h2>
+
+      <div class="stats-container">
+        <!-- Pizza Capacity: 1 Slice -->
+        <div class="stat-row">
+          <span class="stat-label">🍕 Space (ROI):</span>
+          <div class="stat-bar-visual" id="cap-truck">
+            <span class="pizza-indicator">🍕</span>
+          </div>
+        </div>
+        <!-- Speed Bar: 1 block filled -->
+        <div class="stat-row">
+          <span class="stat-label">⚡ Speed:</span>
+          <div class="stat-bar-visual">
+            <div class="speed-block fill-active"></div>
+            <div class="speed-block"></div>
+            <div class="speed-block"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="roi-badge">ROI Capacity: 1 Pizza / Trip</div>
+
+      <button class="action-btn btn-equipped" id="btn-truck" disabled>Owned</button>
+    </section>
+
+    <!-- VEHICLE 2: SCHOOL BUS -->
+    <section class="vehicle-card" id="card-school_bus">
+      <div class="vehicle-sprite-container">
+        <!-- SVG School Bus Sprite -->
+        <svg class="vehicle-sprite" viewBox="0 0 140 100">
+          <g>
+            <rect x="10" y="20" width="115" height="60" rx="10" fill="#ffd016" />
+            <rect x="15" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+            <rect x="45" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+            <rect x="75" y="25" width="20" height="20" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="3" />
+            <!-- Grill and cabin front -->
+            <path d="M125 35 h8 a5 5 0 0 1 5 5 v40 h-13 z" fill="#ffd016" />
+            <rect x="127" y="42" width="8" height="15" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+            <circle cx="32" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+            <circle cx="108" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+            <circle cx="32" cy="80" r="4" fill="#ff4b4b" />
+            <circle cx="108" cy="80" r="4" fill="#ff4b4b" />
+            <text x="18" y="60" font-family="'Fredoka'" font-size="10" fill="#2c3e50" font-weight="bold">🍕 PIZZA EXPRESS</text>
+          </g>
+        </svg>
+      </div>
+
+      <h2 class="vehicle-name">School Bus</h2>
+
+      <div class="stats-container">
+        <!-- Pizza Capacity: 3 Emojis -->
+        <div class="stat-row">
+          <span class="stat-label">🍕 Space (ROI):</span>
+          <div class="stat-bar-visual" id="cap-school_bus">
+            <span class="pizza-indicator">🍕</span>
+            <span class="pizza-indicator">🍕</span>
+            <span class="pizza-indicator">🍕</span>
+          </div>
+        </div>
+        <!-- Speed Bar: 2 blocks filled -->
+        <div class="stat-row">
+          <span class="stat-label">⚡ Speed:</span>
+          <div class="stat-bar-visual">
+            <div class="speed-block fill-active"></div>
+            <div class="speed-block fill-active"></div>
+            <div class="speed-block"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="roi-badge" style="background: #ebf5fb; color: #2e86c1; border-color: #a9cce3;">ROI Capacity: 3 Pizzas / Trip</div>
+
+      <button class="action-btn btn-buy" id="btn-school_bus" data-cost="200">
+        <span>BUY for 🪙 200</span>
+      </button>
+    </section>
+
+    <!-- VEHICLE 3: DOUBLE DECKER BUS -->
+    <section class="vehicle-card" id="card-double_decker">
+      <div class="vehicle-sprite-container">
+        <!-- SVG Double Decker Bus Sprite -->
+        <svg class="vehicle-sprite" viewBox="0 0 140 100">
+          <g>
+            <!-- Lower decker red body -->
+            <rect x="10" y="45" width="115" height="35" fill="#c0392b" rx="6" />
+            <!-- Upper decker red body -->
+            <rect x="10" y="15" width="115" height="32" fill="#ff4b4b" rx="6" />
+            <!-- Roof trim -->
+            <rect x="8" y="10" width="119" height="6" rx="2" fill="#fff" />
+            <!-- Windows lower deck -->
+            <rect x="18" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+            <rect x="44" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+            <rect x="70" y="50" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+            <!-- Windows upper deck -->
+            <rect x="18" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+            <rect x="44" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+            <rect x="70" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+            <rect x="96" y="20" width="16" height="16" rx="3" fill="#e3f2fd" stroke="#2c3e50" stroke-width="2" />
+            <!-- Wheels -->
+            <circle cx="32" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+            <circle cx="108" cy="80" r="14" fill="#2c3e50" stroke="#fff" stroke-width="3" />
+            <circle cx="32" cy="80" r="4" fill="#ffd016" />
+            <circle cx="108" cy="80" r="4" fill="#ffd016" />
+            <text x="94" y="62" font-family="'Fredoka'" font-size="8" fill="#fff" font-weight="bold">LNDN</text>
+          </g>
+        </svg>
+      </div>
+
+      <h2 class="vehicle-name">Double-Decker Bus</h2>
+
+      <div class="stats-container">
+        <!-- Pizza Capacity: 5 Emojis -->
+        <div class="stat-row">
+          <span class="stat-label">🍕 Space (ROI):</span>
+          <div class="stat-bar-visual" id="cap-double_decker">
+            <span class="pizza-indicator">🍕</span>
+            <span class="pizza-indicator">🍕</span>
+            <span class="pizza-indicator">🍕</span>
+            <span class="pizza-indicator">🍕</span>
+            <span class="pizza-indicator">🍕</span>
+          </div>
+        </div>
+        <!-- Speed Bar: 3 blocks filled -->
+        <div class="stat-row">
+          <span class="stat-label">⚡ Speed:</span>
+          <div class="stat-bar-visual">
+            <div class="speed-block fill-active"></div>
+            <div class="speed-block fill-active"></div>
+            <div class="speed-block fill-active"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="roi-badge" style="background: #fdf2e9; color: #d35400; border-color: #fadbd8;">ROI Capacity: 5 Pizzas / Trip</div>
+
+      <button class="action-btn btn-buy" id="btn-double_decker" data-cost="500">
+        <span>BUY for 🪙 500</span>
+      </button>
+    </section>
+
+  </main>
+
+  <!-- GARAGE FLOOR -->
+  <div class="garage-floor"></div>
+
+  <script>
+    // --- PLAYFUL AUDIO SYNTHESIZER (WEB AUDIO API) ---
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // Gentle upward sweep for hovering over UI elements
+    function playHoverSound() {
+      initAudio();
+      if (!audioCtx) return;
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.08);
+      
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+
+    // Safe pop sound for clicks
+    function playClickSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(70, audioCtx.currentTime + 0.12);
+      
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.12);
+    }
+
+    // Cash Register "Cha-Ching" sound
+    function playBuySuccessSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+
+      // Bell chime 1 (High)
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(987.77, now); // B5
+      gain1.gain.setValueAtTime(0.15, now);
+      gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      osc1.start(now);
+      osc1.stop(now + 0.35);
+
+      // Bell chime 2 (Very High - delayed slightly)
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+      gain2.gain.setValueAtTime(0.15, now + 0.08);
+      gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.08 + 0.4);
+      osc2.start(now + 0.08);
+      osc2.stop(now + 0.08 + 0.45);
+
+      // Simulated coin shuffle (filtered noise impulse)
+      const bufferSize = audioCtx.sampleRate * 0.2; // 0.2s of noise
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1500;
+      
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.05, now + 0.1);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1 + 0.15);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noise.start(now + 0.1);
+      noise.stop(now + 0.1 + 0.2);
+    }
+
+    // Invalid Action "Oops/Boop" sound
+    function playBuyFailSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+      osc.frequency.linearRampToValueAtTime(90, audioCtx.currentTime + 0.22);
+      
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 400;
+      
+      osc.disconnect(gain);
+      osc.connect(filter);
+      filter.connect(gain);
+
+      gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.22);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.25);
+    }
+
+    // A pleasant bubble sound for equipping vehicles
+    function playEquipSound() {
+      initAudio();
+      if (!audioCtx) return;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(660, audioCtx.currentTime + 0.15);
+
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.18);
+    }
+
+
+    // --- PURCHASING & FLEET STATE LOGIC ---
+    const coinCounter = document.getElementById('coinCounter');
+    const coinValText = document.getElementById('coinVal');
+
+    // Default economy values
+    let state = {
+      coins: 250,
+      ownedVehicles: {
+        truck: true,
+        school_bus: false,
+        double_decker: false
+      },
+      activeVehicle: 'truck'
+    };
+
+    // Load state from localStorage if exists
+    function loadGameState() {
+      const savedCoins = localStorage.getItem('pizza_coins');
+      const savedVehicles = localStorage.getItem('pizza_owned_vehicles');
+      const savedActive = localStorage.getItem('pizza_active_vehicle');
+
+      if (savedCoins !== null) {
+        state.coins = parseInt(savedCoins, 10);
+      } else {
+        localStorage.setItem('pizza_coins', state.coins);
+      }
+
+      if (savedVehicles !== null) {
+        state.ownedVehicles = JSON.parse(savedVehicles);
+      } else {
+        localStorage.setItem('pizza_owned_vehicles', JSON.stringify(state.ownedVehicles));
+      }
+
+      if (savedActive !== null) {
+        state.activeVehicle = savedActive;
+      } else {
+        localStorage.setItem('pizza_active_vehicle', state.activeVehicle);
+      }
+    }
+
+    function saveGameState() {
+      localStorage.setItem('pizza_coins', state.coins);
+      localStorage.setItem('pizza_owned_vehicles', JSON.stringify(state.ownedVehicles));
+      localStorage.setItem('pizza_active_vehicle', state.activeVehicle);
+    }
+
+    // Refresh UI according to loaded state
+    function updateGarageUI() {
+      coinValText.textContent = state.coins;
+
+      const vehicles = ['truck', 'school_bus', 'double_decker'];
+      vehicles.forEach(vKey => {
+        const card = document.getElementById(`card-${vKey}`);
+        const btn = document.getElementById(`btn-${vKey}`);
+        const isOwned = state.ownedVehicles[vKey];
+        const isActive = state.activeVehicle === vKey;
+
+        // Reset classes
+        card.classList.remove('active-vehicle');
+        btn.className = 'action-btn';
+        btn.disabled = false;
+
+        if (isActive) {
+          card.classList.add('active-vehicle');
+          btn.classList.add('btn-equipped');
+          btn.textContent = 'Active Drive!';
+          btn.disabled = true;
+        } else if (isOwned) {
+          btn.classList.add('btn-equip');
+          btn.textContent = 'Drive This!';
+        } else {
+          btn.classList.add('btn-buy');
+          const cost = btn.getAttribute('data-cost');
+          btn.innerHTML = `<span>BUY for 🪙 ${cost}</span>`;
+        }
+      });
+    }
+
+    // Setup HUD and Back Button sounds
+    document.getElementById('backBtn').addEventListener('mouseenter', () => playHoverSound());
+    document.getElementById('backBtn').addEventListener('click', () => playClickSound());
+    coinCounter.addEventListener('mouseenter', () => playHoverSound());
+
+    // Buy/Equip click actions
+    function setupButtonListeners() {
+      const vehicles = ['truck', 'school_bus', 'double_decker'];
+
+      vehicles.forEach(vKey => {
+        const btn = document.getElementById(`btn-${vKey}`);
+        
+        btn.addEventListener('mouseenter', () => {
+          if (!btn.disabled) playHoverSound();
+        });
+
+        btn.addEventListener('click', () => {
+          if (btn.disabled) return;
+
+          const isOwned = state.ownedVehicles[vKey];
+
+          if (isOwned) {
+            // Equip vehicle
+            playEquipSound();
+            state.activeVehicle = vKey;
+            saveGameState();
+            updateGarageUI();
+          } else {
+            // Buy vehicle
+            const cost = parseInt(btn.getAttribute('data-cost'), 10);
+            if (state.coins >= cost) {
+              state.coins -= cost;
+              state.ownedVehicles[vKey] = true;
+              state.activeVehicle = vKey; // auto equip on purchase
+              playBuySuccessSound();
+              saveGameState();
+              updateGarageUI();
+            } else {
+              // Failed purchase (Oops tone + coin shake)
+              playBuyFailSound();
+              coinCounter.classList.add('coin-error-shake');
+              setTimeout(() => {
+                coinCounter.classList.remove('coin-error-shake');
+              }, 400);
+            }
+          }
+        });
+      });
+    }
+
+    // Init
+    loadGameState();
+    updateGarageUI();
+    setupButtonListeners();
+  </script>
+</body>
+</html>
